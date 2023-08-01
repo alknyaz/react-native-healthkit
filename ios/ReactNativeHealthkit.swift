@@ -1366,4 +1366,103 @@ class ReactNativeHealthkit: RCTEventEmitter {
       }
   }
 
+    @objc(queryStatisticsCollectionForQuantity:unitString:from:to:options:resolve:reject:)
+    func queryStatisticsCollectionForQuantity(
+        typeIdentifier: String,
+        unitString: String,
+        from: Date,
+        to: Date,
+        options: NSArray,
+        resolve: @escaping RCTPromiseResolveBlock,
+        reject: @escaping RCTPromiseRejectBlock
+    ) {
+        guard let store = _store else {
+            return reject(INIT_ERROR, INIT_ERROR_MESSAGE, nil)
+        }
+
+        let calendar = Calendar.current
+        let interval = DateComponents(day: 1)
+        var components = DateComponents(calendar: calendar,
+                                        timeZone: calendar.timeZone,
+                                        hour: 0,
+                                        minute: 0,
+                                        second: 0)
+
+        guard let anchorDate = calendar.nextDate(after: Date(),
+                                                matching: components,
+                                                matchingPolicy: .nextTime,
+                                                repeatedTimePolicy: .first,
+                                                direction: .backward) else {
+            fatalError("*** unable to find the previous day. ***")
+        }
+
+        let predicate = HKQuery.predicateForSamples(withStart: from, end: to, options: [.strictStartDate])
+
+        let identifier = HKQuantityTypeIdentifier.init(rawValue: typeIdentifier)
+        guard let quantityType = HKSampleType.quantityType(forIdentifier: identifier) else {
+            return reject(TYPE_IDENTIFIER_ERROR, "Failed to initialize " + typeIdentifier, nil)
+        }
+
+        var opts = HKStatisticsOptions.init()
+
+        for o in options {
+            let str = o as! String
+            if str == "cumulativeSum" {
+                opts.insert(HKStatisticsOptions.cumulativeSum)
+            } else if str == "discreteAverage" {
+                opts.insert(HKStatisticsOptions.discreteAverage)
+            } else if str == "discreteMax" {
+                opts.insert(HKStatisticsOptions.discreteMax)
+            } else if str == "discreteMin" {
+                opts.insert(HKStatisticsOptions.discreteMin)
+            }
+            if #available(iOS 12, *) {
+                    if str == "discreteMostRecent" {
+                        opts.insert(HKStatisticsOptions.discreteMostRecent)
+                    }
+            }
+            if #available(iOS 13, *) {
+                if str == "duration" {
+                    opts.insert(HKStatisticsOptions.duration)
+                }
+                if str == "mostRecent" {
+                    opts.insert(HKStatisticsOptions.mostRecent)
+                }
+            }
+
+            if str == "separateBySource" {
+                opts.insert(HKStatisticsOptions.separateBySource)
+            }
+        }
+
+        let unit = HKUnit.init(from: unitString)
+
+        let q = HKStatisticsCollectionQuery.init(quantityType: quantityType,
+                                        quantitySamplePredicate: predicate,
+                                        options: opts,
+                                        anchorDate: anchorDate,
+                                        intervalComponents: interval)
+        q.initialResultsHandler = {
+            (_, results, error) in
+
+            guard let err = error else {
+                guard let statsCollection = results else {
+                    return resolve([])
+                }
+                let arr: NSMutableArray = []
+                
+                for s in statsCollection.statistics() {
+                    if let stats = s as? HKStatistics {
+                        let serialized = serializeStatsFromCollection(stats: stats, unit: unit)
+                        arr.add(serialized)
+                    }
+                }
+
+                return resolve(arr)
+            }
+            reject(GENERIC_ERROR, err.localizedDescription, err)
+        }
+
+        store.execute(q)
+    }
 }

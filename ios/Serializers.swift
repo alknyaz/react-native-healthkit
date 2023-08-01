@@ -204,3 +204,30 @@ func serializeAnchor(anchor: HKQueryAnchor?) -> String? {
 
   return encoded
 }
+
+func serializeStatsFromCollection(stats: HKStatistics, unit: HKUnit) -> [String: Any?] {
+    var dic = [String: Any?]()
+    dic.updateValue(_dateFormatter.string(from: stats.startDate), forKey: "startDate")
+    dic.updateValue(_dateFormatter.string(from: stats.endDate), forKey: "endDate")
+
+    if let averageQuantity = stats.averageQuantity() {
+        dic.updateValue(serializeQuantity(unit: unit, quantity: averageQuantity), forKey: "averageQuantity")
+    }
+    if let maximumQuantity = stats.maximumQuantity() {
+        dic.updateValue(serializeQuantity(unit: unit, quantity: maximumQuantity), forKey: "maximumQuantity")
+    }
+    if let minimumQuantity = stats.minimumQuantity() {
+        dic.updateValue(serializeQuantity(unit: unit, quantity: minimumQuantity), forKey: "minimumQuantity")
+    }
+    if let sumQuantity = stats.sumQuantity() {
+        dic.updateValue(serializeQuantity(unit: unit, quantity: sumQuantity), forKey: "sumQuantity")
+    }
+    if #available(iOS 13, *) {
+        let durationUnit = HKUnit.second()
+        if let duration = stats.duration() {
+            dic.updateValue(serializeQuantity(unit: durationUnit, quantity: duration), forKey: "duration")
+        }
+    }
+    
+    return dic
+}

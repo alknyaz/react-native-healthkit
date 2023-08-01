@@ -197,6 +197,15 @@ RCT_EXTERN_METHOD(queryStatisticsForQuantity:(NSString)typeIdentifier
                   reject:(RCTPromiseRejectBlock)reject
 )
 
+RCT_EXTERN_METHOD(queryStatisticsCollectionForQuantity:(NSString)typeIdentifier
+                  unitString:(NSString)unitString
+                  from:(NSDate)from
+                  to:(NSDate)to
+                  options:(NSArray)options
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject
+)
+
 RCT_EXTERN_METHOD(getWheelchairUse:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 

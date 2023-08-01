@@ -12,6 +12,7 @@ import type {
   HKWorkoutRaw,
   LengthUnit,
   MetadataMapperForQuantityIdentifier,
+  QueryStatisticsCollectionResponseRaw,
   QueryStatisticsResponseRaw,
   UnitForIdentifier,
 } from './native-types'
@@ -76,6 +77,14 @@ export interface QueryStatisticsResponse<TIdentifier extends HKQuantityTypeIdent
   > {
   readonly mostRecentQuantityDateInterval?: { readonly from: Date; readonly to: Date };
 }
+
+export type QueryStatisticsCollectionResponse<
+  TIdentifier extends HKQuantityTypeIdentifier,
+  TUnit extends UnitForIdentifier<TIdentifier>
+> = (Omit<QueryStatisticsCollectionResponseRaw<TIdentifier, TUnit>[number], "startDate" | "endDate"> & {
+  startDate: Date,
+  endDate: Date
+})[]
 
 export type HKCategorySampleForSaving =Omit<HKCategorySample, 'device' | 'endDate' | 'startDate' | 'uuid'>
 
