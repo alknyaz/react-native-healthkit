@@ -1497,14 +1497,14 @@ class ReactNativeHealthkit: RCTEventEmitter {
         let energyUnit = HKUnit.init(from: energyUnitString)
 
         let q = HKActivitySummaryQuery(predicate: summariesWithinRange) {
-            (query, summariesOrNil, errorOrNil) -> Void in
+            (query, summariesOrNil, errorOrNil) in
     
             if let err = errorOrNil {
                 return reject(GENERIC_ERROR, err.localizedDescription, err)
             }
 
             guard let summaries = summariesOrNil else {
-                return fatalError("Should not fail")
+                fatalError("Should not fail")
             }
             
             var arr: NSMutableArray = []
