@@ -1514,7 +1514,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
                     fatalError("Should not fail")
                 }
                 var dic = [String: Any?]()
-                dic.updateValue(_dateFormatter.string(from: startDate), forKey: "startDate")
+                dic.updateValue(self._dateFormatter.string(from: startDate), forKey: "startDate")
                 dic.updateValue(
                     serializeQuantity(unit: energyUnit, quantity: summary.activeEnergyBurned),
                     forKey: "activeEnergyBurned"
@@ -1523,14 +1523,16 @@ class ReactNativeHealthkit: RCTEventEmitter {
                     serializeQuantity(unit: energyUnit, quantity: summary.activeEnergyBurnedGoal),
                     forKey: "activeEnergyBurnedGoal"
                 )
-                dic.updateValue(
-                    serializeQuantity(unit: timeUnit, quantity: summary.appleMoveTime),
-                    forKey: "appleMoveTime"
-                )
-                dic.updateValue(
-                    serializeQuantity(unit: timeUnit, quantity: summary.appleMoveTimeGoal),
-                    forKey: "appleMoveTimeGoal"
-                )
+                if #available(iOS 14, *) {
+                    dic.updateValue(
+                        serializeQuantity(unit: timeUnit, quantity: summary.appleMoveTime),
+                        forKey: "appleMoveTime"
+                    )
+                    dic.updateValue(
+                        serializeQuantity(unit: timeUnit, quantity: summary.appleMoveTimeGoal),
+                        forKey: "appleMoveTimeGoal"
+                    )
+                }
                 dic.updateValue(
                     serializeQuantity(unit: timeUnit, quantity: summary.appleExerciseTime),
                     forKey: "appleExerciseTime"
@@ -1539,18 +1541,22 @@ class ReactNativeHealthkit: RCTEventEmitter {
                     serializeQuantity(unit: timeUnit, quantity: summary.appleExerciseTimeGoal),
                     forKey: "appleExerciseTimeGoal"
                 )
-                dic.updateValue(
-                    serializeQuantity(unit: timeUnit, quantity: summary.exerciseTimeGoal),
-                    forKey: "exerciseTimeGoal"
-                )
+                if #available(iOS 16, *) {
+                    dic.updateValue(
+                        serializeQuantity(unit: timeUnit, quantity: summary.exerciseTimeGoal),
+                        forKey: "exerciseTimeGoal"
+                    )
+                }
                 dic.updateValue(
                     serializeQuantity(unit: HKUnit.count(), quantity: summary.appleStandHours),
                     forKey: "appleStandHours"
                 )
-                dic.updateValue(
-                    serializeQuantity(unit: HKUnit.count(), quantity: summary.standHoursGoal),
-                    forKey: "standHoursGoal"
-                )
+                if #available(iOS 16, *) {
+                    dic.updateValue(
+                        serializeQuantity(unit: HKUnit.count(), quantity: summary.standHoursGoal),
+                        forKey: "standHoursGoal"
+                    )
+                }
                 dic.updateValue(
                     serializeQuantity(unit: HKUnit.count(), quantity: summary.appleStandHoursGoal),
                     forKey: "appleStandHoursGoal"
