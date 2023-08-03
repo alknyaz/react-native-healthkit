@@ -12,8 +12,10 @@ import type {
   HKWorkoutRaw,
   LengthUnit,
   MetadataMapperForQuantityIdentifier,
+  QueryActivitySummaryForQuantityRaw,
   QueryStatisticsCollectionResponseRaw,
   QueryStatisticsResponseRaw,
+  TimeUnit,
   UnitForIdentifier,
 } from './native-types'
 
@@ -84,6 +86,13 @@ export type QueryStatisticsCollectionResponse<
 > = (Omit<QueryStatisticsCollectionResponseRaw<TIdentifier, TUnit>[number], "startDate" | "endDate"> & {
   startDate: Date,
   endDate: Date
+})[]
+
+export type QueryActivitySummaryResponse<
+  TEnergyUnit extends EnergyUnit,
+  TTimeUnit extends TimeUnit
+> = (Omit<QueryActivitySummaryForQuantityRaw<TEnergyUnit, TTimeUnit>[number], "startDate"> & {
+  startDate: Date
 })[]
 
 export type HKCategorySampleForSaving =Omit<HKCategorySample, 'device' | 'endDate' | 'startDate' | 'uuid'>

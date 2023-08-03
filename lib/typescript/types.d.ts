@@ -1,4 +1,4 @@
-import type { EnergyUnit, HKCategorySampleRaw, HKCategoryTypeIdentifier, HKCorrelationRaw, HKCorrelationTypeIdentifier, HKDevice, HKHeartbeatSeriesSampleRaw, HKQuantityTypeIdentifier, HKSourceRevision, HKUnit, HKWorkoutRaw, LengthUnit, MetadataMapperForQuantityIdentifier, QueryStatisticsCollectionResponseRaw, QueryStatisticsResponseRaw, UnitForIdentifier } from './native-types';
+import type { EnergyUnit, HKCategorySampleRaw, HKCategoryTypeIdentifier, HKCorrelationRaw, HKCorrelationTypeIdentifier, HKDevice, HKHeartbeatSeriesSampleRaw, HKQuantityTypeIdentifier, HKSourceRevision, HKUnit, HKWorkoutRaw, LengthUnit, MetadataMapperForQuantityIdentifier, QueryActivitySummaryForQuantityRaw, QueryStatisticsCollectionResponseRaw, QueryStatisticsResponseRaw, TimeUnit, UnitForIdentifier } from './native-types';
 export * from './native-types';
 export interface QueryWorkoutsOptions<TEnergy extends HKUnit, TDistance extends HKUnit> extends GenericQueryOptions {
     readonly energyUnit?: TEnergy;
@@ -43,6 +43,9 @@ export interface QueryStatisticsResponse<TIdentifier extends HKQuantityTypeIdent
 export type QueryStatisticsCollectionResponse<TIdentifier extends HKQuantityTypeIdentifier, TUnit extends UnitForIdentifier<TIdentifier>> = (Omit<QueryStatisticsCollectionResponseRaw<TIdentifier, TUnit>[number], "startDate" | "endDate"> & {
     startDate: Date;
     endDate: Date;
+})[];
+export type QueryActivitySummaryResponse<TEnergyUnit extends EnergyUnit, TTimeUnit extends TimeUnit> = (Omit<QueryActivitySummaryForQuantityRaw<TEnergyUnit, TTimeUnit>[number], "startDate"> & {
+    startDate: Date;
 })[];
 export type HKCategorySampleForSaving = Omit<HKCategorySample, 'device' | 'endDate' | 'startDate' | 'uuid'>;
 export type HKQuantitySampleForSaving = Omit<HKQuantitySample, 'device' | 'endDate' | 'startDate' | 'uuid'>;

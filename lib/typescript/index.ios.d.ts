@@ -39,6 +39,7 @@ declare const Healthkit: {
     queryQuantitySamplesWithAnchor: import("./utils/queryQuantitySamplesWithAnchor").QueryQuantitySamplesWithAnchorFn;
     queryStatisticsForQuantity: typeof queryStatisticsForQuantity;
     queryStatisticsCollectionForQuantity: typeof queryStatisticsCollectionForQuantity;
+    queryActivitySummaryForQuantity: import("./utils/queryActivitySummaryForQuantity").QueryActivitySummaryForQuantityFn;
     queryWorkouts: typeof queryWorkouts;
     querySources: import("./utils/querySources").QuerySourcesFn;
     requestAuthorization: (read: readonly import("./native-types").HealthkitReadAuthorization[], write?: readonly import("./native-types").HKSampleTypeIdentifier[]) => Promise<boolean>;

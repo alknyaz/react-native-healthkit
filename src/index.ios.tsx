@@ -24,6 +24,7 @@ import queryQuantitySamplesWithAnchor from './utils/queryQuantitySamplesWithAnch
 import querySources from './utils/querySources'
 import queryStatisticsForQuantity from './utils/queryStatisticsForQuantity'
 import queryStatisticsCollectionForQuantity from './utils/queryStatisticsCollectionForQuantity'
+import queryActivitySummaryForQuantity from './utils/queryActivitySummaryForQuantity'
 import queryWorkouts from './utils/queryWorkouts'
 import requestAuthorization from './utils/requestAuthorization'
 import saveCategorySample from './utils/saveCategorySample'
@@ -71,6 +72,7 @@ const Healthkit = {
   queryQuantitySamplesWithAnchor,
   queryStatisticsForQuantity,
   queryStatisticsCollectionForQuantity,
+  queryActivitySummaryForQuantity,
   queryWorkouts,
   querySources,
 

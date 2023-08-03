@@ -531,6 +531,23 @@ export type QueryStatisticsCollectionResponseRaw<
   readonly duration?: HKQuantity<HKQuantityTypeIdentifier, TimeUnit>;
 }[];
 
+export type QueryActivitySummaryForQuantityRaw<
+  TEnergyUnit extends EnergyUnit,
+  TTimeUnit extends TimeUnit
+> = {
+  startDate: string | Date,
+  readonly activeEnergyBurned: HKQuantity<HKQuantityTypeIdentifier.activeEnergyBurned, TEnergyUnit>;
+  readonly activeEnergyBurnedGoal: HKQuantity<HKQuantityTypeIdentifier.activeEnergyBurned, TEnergyUnit>;
+  readonly appleMoveTime: HKQuantity<HKQuantityTypeIdentifier.appleMoveTime, TTimeUnit>;
+  readonly appleMoveTimeGoal: HKQuantity<HKQuantityTypeIdentifier.appleMoveTime, TTimeUnit>;
+  readonly appleExerciseTime: HKQuantity<HKQuantityTypeIdentifier.appleExerciseTime, TTimeUnit>;
+  readonly appleExerciseTimeGoal: HKQuantity<HKQuantityTypeIdentifier.appleExerciseTime, TTimeUnit>;
+  readonly exerciseTimeGoal: HKQuantity<HKQuantityTypeIdentifier.appleExerciseTime, TTimeUnit>;
+  readonly appleStandHours: HKQuantity<HKQuantityTypeIdentifier, HKUnits.Count>;
+  readonly standHoursGoal: HKQuantity<HKQuantityTypeIdentifier, HKUnits.Count>;
+  readonly appleStandHoursGoal: HKQuantity<HKQuantityTypeIdentifier, HKUnits.Count>;
+}[]
+
 /**
  * https://developer.apple.com/documentation/healthkit/hkcategoryvaluecervicalmucusquality
  */
@@ -1478,6 +1495,15 @@ type ReactNativeHealthkitTypeNative = {
     to: string,
     options: readonly HKStatisticsOptions[]
   ) => Promise<QueryStatisticsCollectionResponseRaw<TIdentifier, TUnit>>;
+  readonly queryActivitySummaryForQuantity: <
+    TEnergyUnit extends EnergyUnit,
+    TTimeUnit extends TimeUnit
+  >(
+    energyUnit: TEnergyUnit,
+    timeUnit: TTimeUnit,
+    from: string,
+    to: string
+  ) => Promise<QueryActivitySummaryForQuantityRaw<TEnergyUnit, TTimeUnit>>
   readonly getPreferredUnits: (
     identifiers: readonly HKQuantityTypeIdentifier[]
   ) => Promise<TypeToUnitMapping>;

@@ -1465,4 +1465,103 @@ class ReactNativeHealthkit: RCTEventEmitter {
 
         store.execute(q)
     }
+
+    @objc(queryActivitySummaryForQuantity:timeUnitString:from:to:resolve:reject:)
+    func queryActivitySummaryForQuantity(
+        energyUnitString: String,
+        timeUnitString: String,
+        from: Date,
+        to: Date,
+        resolve: @escaping RCTPromiseResolveBlock,
+        reject: @escaping RCTPromiseRejectBlock
+    ) {
+        guard let store = _store else {
+            return reject(INIT_ERROR, INIT_ERROR_MESSAGE, nil)
+        }
+        let calendar = NSCalendar.current
+
+        let units: Set<Calendar.Component> = [.day, .month, .year, .era]
+
+        var startDateComponents = calendar.dateComponents(units, from: from)
+        startDateComponents.calendar = calendar
+
+        var endDateComponents = calendar.dateComponents(units, from: to)
+        endDateComponents.calendar = calendar
+
+        let summariesWithinRange = HKQuery.predicate(
+            forActivitySummariesBetweenStart: startDateComponents,
+            end: endDateComponents
+        )
+
+        let timeUnit = HKUnit.init(from: timeUnitString)
+        let energyUnit = HKUnit.init(from: energyUnitString)
+
+        let q = HKActivitySummaryQuery(predicate: summariesWithinRange) {
+            (query, summariesOrNil, errorOrNil) -> Void in
+    
+            if let err = errorOrNil {
+                return reject(GENERIC_ERROR, err.localizedDescription, err)
+            }
+
+            guard let summaries = summariesOrNil else {
+                return fatalError("Should not fail")
+            }
+            
+            var arr: NSMutableArray = []
+
+            for summary in summaries {
+                guard let startDate = summary.dateComponents(for: calendar).date else {
+                    fatalError("Should not fail")
+                }
+                var dic = [String: Any?]()
+                dic.updateValue(_dateFormatter.string(from: startDate), forKey: "startDate")
+                dic.updateValue(
+                    serializeQuantity(unit: energyUnit, quantity: summary.activeEnergyBurned),
+                    forKey: "activeEnergyBurned"
+                )
+                dic.updateValue(
+                    serializeQuantity(unit: energyUnit, quantity: summary.activeEnergyBurnedGoal),
+                    forKey: "activeEnergyBurnedGoal"
+                )
+                dic.updateValue(
+                    serializeQuantity(unit: timeUnit, quantity: summary.appleMoveTime),
+                    forKey: "appleMoveTime"
+                )
+                dic.updateValue(
+                    serializeQuantity(unit: timeUnit, quantity: summary.appleMoveTimeGoal),
+                    forKey: "appleMoveTimeGoal"
+                )
+                dic.updateValue(
+                    serializeQuantity(unit: timeUnit, quantity: summary.appleExerciseTime),
+                    forKey: "appleExerciseTime"
+                )
+                dic.updateValue(
+                    serializeQuantity(unit: timeUnit, quantity: summary.appleExerciseTimeGoal),
+                    forKey: "appleExerciseTimeGoal"
+                )
+                dic.updateValue(
+                    serializeQuantity(unit: timeUnit, quantity: summary.exerciseTimeGoal),
+                    forKey: "exerciseTimeGoal"
+                )
+                dic.updateValue(
+                    serializeQuantity(unit: HKUnit.count(), quantity: summary.appleStandHours),
+                    forKey: "appleStandHours"
+                )
+                dic.updateValue(
+                    serializeQuantity(unit: HKUnit.count(), quantity: summary.standHoursGoal),
+                    forKey: "standHoursGoal"
+                )
+                dic.updateValue(
+                    serializeQuantity(unit: HKUnit.count(), quantity: summary.appleStandHoursGoal),
+                    forKey: "appleStandHoursGoal"
+                )
+                
+                arr.add(dic)
+            }
+
+            return resolve(arr)
+        }
+
+        store.execute(q)
+    }
 }
