@@ -23,6 +23,11 @@ const queryActivitySummaryForQuantity: QueryActivitySummaryForQuantityFn = async
   const energyUnit = await ensureUnit(HKQuantityTypeIdentifier.activeEnergyBurned, options.energyUnit)
   const timeUnit = await ensureUnit(HKQuantityTypeIdentifier.appleMoveTime, options.timeUnit)
   console.log("units:", energyUnit, timeUnit)
+  console.log("preffered units:", JSON.stringify(
+    await Native.getPreferredUnits([HKQuantityTypeIdentifier.activeEnergyBurned, HKQuantityTypeIdentifier.appleMoveTime]),
+    undefined,
+    2
+  ))
 
   const opts = prepareOptions(options)
 
