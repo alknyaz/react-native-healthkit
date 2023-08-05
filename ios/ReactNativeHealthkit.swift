@@ -1504,7 +1504,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
             }
 
             guard let summaries = summariesOrNil else {
-                resolve([])
+                return resolve([])
             }
             
             var arr: NSMutableArray = []
