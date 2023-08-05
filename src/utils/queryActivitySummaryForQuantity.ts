@@ -1,6 +1,6 @@
 import ensureUnit from './ensureUnit'
 import prepareOptions from './prepareOptions'
-import Native from '../native-types'
+import Native, { HKUnitMetric, HKUnits } from '../native-types'
 
 import {
   HKQuantityTypeIdentifier, UnitOfEnergy, UnitOfTime,
@@ -20,19 +20,10 @@ export type QueryActivitySummaryForQuantityFn = <
 const queryActivitySummaryForQuantity: QueryActivitySummaryForQuantityFn = async (
   options,
 ) => {
-  try {
-    const energyUnit = await ensureUnit(HKQuantityTypeIdentifier.activeEnergyBurned, options.energyUnit)
-  } catch (e) {
-    console.error(e)
-  }
   const energyUnit = await ensureUnit(HKQuantityTypeIdentifier.activeEnergyBurned, options.energyUnit)
+    ?? UnitOfEnergy.Joules
   const timeUnit = await ensureUnit(HKQuantityTypeIdentifier.appleMoveTime, options.timeUnit)
-  console.log("units:", energyUnit, timeUnit)
-  console.log("preffered units:", JSON.stringify(
-    await Native.getPreferredUnits([HKQuantityTypeIdentifier.dietaryEnergyConsumed, HKQuantityTypeIdentifier.timeInDaylight]),
-    undefined,
-    2
-  ))
+    ?? UnitOfTime.Seconds
 
   const opts = prepareOptions(options)
 
