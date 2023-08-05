@@ -20,6 +20,11 @@ export type QueryActivitySummaryForQuantityFn = <
 const queryActivitySummaryForQuantity: QueryActivitySummaryForQuantityFn = async (
   options,
 ) => {
+  try {
+    const energyUnit = await ensureUnit(HKQuantityTypeIdentifier.activeEnergyBurned, options.energyUnit)
+  } catch (e) {
+    console.error(e)
+  }
   const energyUnit = await ensureUnit(HKQuantityTypeIdentifier.activeEnergyBurned, options.energyUnit)
   const timeUnit = await ensureUnit(HKQuantityTypeIdentifier.appleMoveTime, options.timeUnit)
   console.log("units:", energyUnit, timeUnit)
