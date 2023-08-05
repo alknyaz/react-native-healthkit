@@ -5,7 +5,7 @@ import Native from '../native-types'
 import {
   HKQuantityTypeIdentifier, UnitOfEnergy, UnitOfTime,
 } from '../native-types'
-import type { GenericQueryOptions, HKQuantitySample, QueryActivitySummaryForQuantityRaw } from '../types'
+import type { GenericQueryOptions, QueryActivitySummaryForQuantityRaw } from '../types'
 
 export type QueryActivitySummaryForQuantityFn = <
   TEnergyUnit extends UnitOfEnergy,
@@ -22,6 +22,7 @@ const queryActivitySummaryForQuantity: QueryActivitySummaryForQuantityFn = async
 ) => {
   const energyUnit = await ensureUnit(HKQuantityTypeIdentifier.activeEnergyBurned, options.energyUnit)
   const timeUnit = await ensureUnit(HKQuantityTypeIdentifier.appleMoveTime, options.timeUnit)
+  console.log("units:", energyUnit, timeUnit)
 
   const opts = prepareOptions(options)
 
