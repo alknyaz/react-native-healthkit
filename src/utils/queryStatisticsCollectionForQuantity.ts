@@ -28,7 +28,7 @@ async function queryStatisticsCollectionForQuantity<TIdentifier extends HKQuanti
     toDate.toISOString(),
     options,
     withUpdates,
-    updateCallback ?? () => {}
+    updateCallback
   )
 
   const response = rawResponse.map((record) => {
