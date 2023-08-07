@@ -1491,7 +1491,12 @@ class ReactNativeHealthkit: RCTEventEmitter {
                     }
                 }
 
-                updateCallback([NSNull(), [serializedStats, serializedStatsCollection]])
+                let data: NSDictionary = [
+                    "stats": serializedStats,
+                    "statsCollection": serializedStatsCollection
+                ]
+
+                updateCallback([NSNull(), data])
             }
         }
 
