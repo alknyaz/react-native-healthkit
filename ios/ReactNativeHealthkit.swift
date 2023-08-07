@@ -1366,13 +1366,14 @@ class ReactNativeHealthkit: RCTEventEmitter {
       }
   }
 
-    @objc(queryStatisticsCollectionForQuantity:unitString:from:to:options:updateCallback:resolve:reject:)
+    @objc(queryStatisticsCollectionForQuantity:unitString:from:to:options:withUpdates:updateCallback:resolve:reject:)
     func queryStatisticsCollectionForQuantity(
         typeIdentifier: String,
         unitString: String,
         from: Date,
         to: Date,
         options: NSArray,
+        withUpdates: Bool,
         updateCallback: RCTResponseSenderBlock,
         resolve: @escaping RCTPromiseResolveBlock,
         reject: @escaping RCTPromiseRejectBlock
@@ -1464,16 +1465,12 @@ class ReactNativeHealthkit: RCTEventEmitter {
             reject(GENERIC_ERROR, err.localizedDescription, err)
         }
 
-        func stopQuery() {
-            stop(q)
-        }
-
-        if let callback = updateCallback {
+        if withUpdates {
             q.statisticsUpdateHandler = {
                 (_, result, resultsCollection, error) in
 
                 if let err = error {
-                    return callback([RCTMakeError(GENERIC_ERROR, err.localizedDescription, err)])
+                    return updateCallback([RCTMakeError(GENERIC_ERROR, err.localizedDescription, err)])
                 }
 
                 var serializedStats: HKStatistics?
@@ -1492,9 +1489,22 @@ class ReactNativeHealthkit: RCTEventEmitter {
                     }
                 }
 
-                callback([NSNull(), [serializedStats, serializedStatsCollection]])
+                updateCallback([NSNull(), [serializedStats, serializedStatsCollection]])
             }
-            let timer = Timer(fireAt: to, interval: 0, target: self, selector: #selector(stopQuery), userInfo: nil, repeats: false)
+
+
+            let stopQuery = Selector {
+                stop(q)
+            }
+
+            let timer = Timer(
+                fireAt: to,
+                interval: 0,
+                target: self,
+                selector: stopQuery,
+                userInfo: nil,
+                repeats: false
+            )
             RunLoop.main.add(timer, forMode: RunLoop.Mode.common)
         }
 

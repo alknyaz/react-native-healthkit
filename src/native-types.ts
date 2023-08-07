@@ -1499,6 +1499,7 @@ type ReactNativeHealthkitTypeNative = {
     from: string,
     to: string,
     options: readonly HKStatisticsOptions[],
+    withUpdates: boolean,
     updateCallback?: (
       error: string,
       results: [HKStatistics<TIdentifier, TUnit>, HKStatistics<TIdentifier, TUnit>[]]
