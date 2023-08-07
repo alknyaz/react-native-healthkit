@@ -1366,7 +1366,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
       }
   }
 
-    @objc(queryStatisticsCollectionForQuantity:unitString:from:to:options:resolve:reject:)
+    @objc(queryStatisticsCollectionForQuantity:unitString:from:to:options:updateCallback:resolve:reject:)
     func queryStatisticsCollectionForQuantity(
         typeIdentifier: String,
         unitString: String,
