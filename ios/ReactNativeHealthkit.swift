@@ -1472,7 +1472,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
                 (_, result, resultsCollection, error) in
 
                 if let err = error {
-                    return updateCallback([RCTMakeError(GENERIC_ERROR, err.localizedDescription, nil)])
+                    return updateCallback([RCTMakeError(GENERIC_ERROR, err.localizedDescription, nil), nil])
                 }
 
                 var serializedStats: [String: Any]?
