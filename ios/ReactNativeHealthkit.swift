@@ -1374,7 +1374,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
         to: Date,
         options: NSArray,
         withUpdates: Bool,
-        updateCallback: RCTResponseSenderBlock,
+        updateCallback: @escaping RCTResponseSenderBlock,
         resolve: @escaping RCTPromiseResolveBlock,
         reject: @escaping RCTPromiseRejectBlock
     ) {
