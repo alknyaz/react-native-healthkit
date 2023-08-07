@@ -1381,8 +1381,6 @@ class ReactNativeHealthkit: RCTEventEmitter {
             return reject(INIT_ERROR, INIT_ERROR_MESSAGE, nil)
         }
 
-        let from = dateOrNilIfZero(date: from)
-        let to = dateOrNilIfZero(date: to)
         let calendar = Calendar.current
         let interval = DateComponents(day: 1)
         var components = DateComponents(calendar: calendar,
@@ -1515,9 +1513,6 @@ class ReactNativeHealthkit: RCTEventEmitter {
         guard let store = _store else {
             return reject(INIT_ERROR, INIT_ERROR_MESSAGE, nil)
         }
-
-        let from = dateOrNilIfZero(date: from)
-        let to = dateOrNilIfZero(date: to)
 
         let calendar = NSCalendar.current
 
