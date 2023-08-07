@@ -1470,7 +1470,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
                 (_, result, resultsCollection, error) in
 
                 if let err = error {
-                    return updateCallback([RCTMakeError(GENERIC_ERROR, err.localizedDescription, err)])
+                    return updateCallback([RCTMakeError(GENERIC_ERROR, err.localizedDescription, nil)])
                 }
 
                 var serializedStats: HKStatistics?
@@ -1494,7 +1494,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
 
 
             let stopQuery = Selector {
-                stop(q)
+                store.stop(q)
             }
 
             let timer = Timer(
