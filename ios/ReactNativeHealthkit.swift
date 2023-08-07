@@ -1439,6 +1439,8 @@ class ReactNativeHealthkit: RCTEventEmitter {
 
         let unit = HKUnit.init(from: unitString)
 
+        let queryId = UUID().uuidString
+
         let q = HKStatisticsCollectionQuery.init(quantityType: quantityType,
                                         quantitySamplePredicate: predicate,
                                         options: opts,
@@ -1473,7 +1475,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
                     return updateCallback([RCTMakeError(GENERIC_ERROR, err.localizedDescription, nil)])
                 }
 
-                var serializedStats: HKStatistics?
+                var serializedStats: [String: Any]?
                 var serializedStatsCollection: NSMutableArray = []
 
                 if let stats = result {
@@ -1491,24 +1493,10 @@ class ReactNativeHealthkit: RCTEventEmitter {
 
                 updateCallback([NSNull(), [serializedStats, serializedStatsCollection]])
             }
-
-
-            let stopQuery = Selector {
-                store.stop(q)
-            }
-
-            let timer = Timer(
-                fireAt: to,
-                interval: 0,
-                target: self,
-                selector: stopQuery,
-                userInfo: nil,
-                repeats: false
-            )
-            RunLoop.main.add(timer, forMode: RunLoop.Mode.common)
         }
 
         store.execute(q)
+        self._runningQueries[queryId] = q
     }
 
     @objc(queryActivitySummaryForQuantity:timeUnitString:from:to:resolve:reject:)
