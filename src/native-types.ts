@@ -518,7 +518,7 @@ export type QueryStatisticsResponseRaw<
   readonly duration?: HKQuantity<HKQuantityTypeIdentifier, TimeUnit>;
 };
 
-export type QueryStatisticsCollectionResponseRaw<
+export type HKStatistics<
   TIdentifier extends HKQuantityTypeIdentifier,
   TUnit extends UnitForIdentifier<TIdentifier>
 > = {
@@ -529,7 +529,12 @@ export type QueryStatisticsCollectionResponseRaw<
   readonly minimumQuantity?: HKQuantity<TIdentifier, TUnit>;
   readonly sumQuantity?: HKQuantity<TIdentifier, TUnit>;
   readonly duration?: HKQuantity<HKQuantityTypeIdentifier, TimeUnit>;
-}[];
+};
+
+export type QueryStatisticsCollectionResponseRaw<
+  TIdentifier extends HKQuantityTypeIdentifier,
+  TUnit extends UnitForIdentifier<TIdentifier>
+> = HKStatistics<TIdentifier, TUnit>[];
 
 export type QueryActivitySummaryForQuantityRaw<
   TEnergyUnit extends EnergyUnit,
@@ -1493,7 +1498,11 @@ type ReactNativeHealthkitTypeNative = {
     unit: TUnit,
     from: string,
     to: string,
-    options: readonly HKStatisticsOptions[]
+    options: readonly HKStatisticsOptions[],
+    updateCallback?: (
+      error: string,
+      results: [HKStatistics<TIdentifier, TUnit>, HKStatistics<TIdentifier, TUnit>[]]
+    ) => void
   ) => Promise<QueryStatisticsCollectionResponseRaw<TIdentifier, TUnit>>;
   readonly queryActivitySummaryForQuantity: <
     TEnergyUnit extends EnergyUnit,

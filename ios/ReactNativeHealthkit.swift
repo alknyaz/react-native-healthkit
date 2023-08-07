@@ -1373,6 +1373,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
         from: Date,
         to: Date,
         options: NSArray,
+        updateCallback: RCTResponseSenderBlock,
         resolve: @escaping RCTPromiseResolveBlock,
         reject: @escaping RCTPromiseRejectBlock
     ) {
@@ -1380,6 +1381,8 @@ class ReactNativeHealthkit: RCTEventEmitter {
             return reject(INIT_ERROR, INIT_ERROR_MESSAGE, nil)
         }
 
+        let from = dateOrNilIfZero(date: from)
+        let to = dateOrNilIfZero(date: to)
         let calendar = Calendar.current
         let interval = DateComponents(day: 1)
         var components = DateComponents(calendar: calendar,
@@ -1463,6 +1466,40 @@ class ReactNativeHealthkit: RCTEventEmitter {
             reject(GENERIC_ERROR, err.localizedDescription, err)
         }
 
+        func stopQuery() {
+            stop(q)
+        }
+
+        if let callback = updateCallback {
+            q.statisticsUpdateHandler = {
+                (_, result, resultsCollection, error) in
+
+                if let err = error {
+                    return callback([RCTMakeError(GENERIC_ERROR, err.localizedDescription, err)])
+                }
+
+                var serializedStats: HKStatistics?
+                var serializedStatsCollection: NSMutableArray = []
+
+                if let stats = result {
+                    serializedStats = serializeStatsFromCollection(stats: stats, unit: unit)
+                }
+
+                if let statsCollection = resultsCollection {
+                    for s in statsCollection.statistics() {
+                        if let stats = s as? HKStatistics {
+                            let serialized = serializeStatsFromCollection(stats: stats, unit: unit)
+                            serializedStatsCollection.add(serialized)
+                        }
+                    }
+                }
+
+                callback([NSNull(), [serializedStats, serializedStatsCollection]])
+            }
+            let timer = Timer(fireAt: to, interval: 0, target: self, selector: #selector(stopQuery), userInfo: nil, repeats: false)
+            RunLoop.main.add(timer, forMode: RunLoop.Mode.common)
+        }
+
         store.execute(q)
     }
 
@@ -1478,6 +1515,10 @@ class ReactNativeHealthkit: RCTEventEmitter {
         guard let store = _store else {
             return reject(INIT_ERROR, INIT_ERROR_MESSAGE, nil)
         }
+
+        let from = dateOrNilIfZero(date: from)
+        let to = dateOrNilIfZero(date: to)
+
         let calendar = NSCalendar.current
 
         let units: Set<Calendar.Component> = [.day, .month, .year, .era]
