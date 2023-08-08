@@ -1366,13 +1366,14 @@ class ReactNativeHealthkit: RCTEventEmitter {
       }
   }
 
-    @objc(queryStatisticsCollectionForQuantity:unitString:from:to:options:resolve:reject:)
+    @objc(queryStatisticsCollectionForQuantity:unitString:from:to:options:updateCallback:resolve:reject:)
     func queryStatisticsCollectionForQuantity(
         typeIdentifier: String,
         unitString: String,
         from: Date,
         to: Date,
         options: NSArray,
+        updateCallback: @escaping RCTResponseSenderBlock,
         resolve: @escaping RCTPromiseResolveBlock,
         reject: @escaping RCTPromiseRejectBlock
     ) {
@@ -1437,6 +1438,8 @@ class ReactNativeHealthkit: RCTEventEmitter {
 
         let unit = HKUnit.init(from: unitString)
 
+        let queryId = UUID().uuidString
+
         let q = HKStatisticsCollectionQuery.init(quantityType: quantityType,
                                         quantitySamplePredicate: predicate,
                                         options: opts,
@@ -1463,7 +1466,19 @@ class ReactNativeHealthkit: RCTEventEmitter {
             reject(GENERIC_ERROR, err.localizedDescription, err)
         }
 
+        q.statisticsUpdateHandler = {
+            (q, stats, statsCollection, error) in
+
+            if let err = error {
+                return
+            }
+
+            let statsSerialized = serializeStatsFromCollection(stats: stats, unit: unit)
+            updateCallback([nil, statsSerialized])
+        }
+
         store.execute(q)
+        self._runningQueries[queryId]
     }
 
     @objc(queryActivitySummaryForQuantity:timeUnitString:from:to:resolve:reject:)

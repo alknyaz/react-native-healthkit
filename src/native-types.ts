@@ -1498,7 +1498,8 @@ type ReactNativeHealthkitTypeNative = {
     unit: TUnit,
     from: string,
     to: string,
-    options: readonly HKStatisticsOptions[]
+    options: readonly HKStatisticsOptions[],
+    updateCallback: (error: string, data: any) => void
   ) => Promise<QueryStatisticsCollectionResponseRaw<TIdentifier, TUnit>>;
   readonly queryActivitySummaryForQuantity: <
     TEnergyUnit extends EnergyUnit,
