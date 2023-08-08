@@ -1473,8 +1473,10 @@ class ReactNativeHealthkit: RCTEventEmitter {
                 return
             }
 
-            let statsSerialized = serializeStatsFromCollection(stats: stats, unit: unit)
-            updateCallback([nil, statsSerialized])
+            if let stats = stats {
+                let statsSerialized = serializeStatsFromCollection(stats: stats, unit: unit)
+                updateCallback([nil, statsSerialized])
+            }
         }
 
         store.execute(q)
