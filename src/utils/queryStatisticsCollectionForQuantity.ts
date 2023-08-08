@@ -19,7 +19,7 @@ async function queryStatisticsCollectionForQuantity<TIdentifier extends HKQuanti
     from.toISOString(),
     toDate.toISOString(),
     options,
-    (error: string, data: any) => console.log(JSON.stringify(data))
+    ([error, data]) => console.log(JSON.stringify(data))
   )
 
   const response = rawResponse.map((record) => {
