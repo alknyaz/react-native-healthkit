@@ -8,27 +8,17 @@ async function queryStatisticsCollectionForQuantity<TIdentifier extends HKQuanti
   options: readonly HKStatisticsOptions[],
   from: Date,
   to?: Date,
-  unit?: TUnit,
-  updateCallback?: (
-    error: string,
-    results: [
-      Awaited<ReturnType<typeof Native.queryStatisticsCollectionForQuantity>>[number],
-      Awaited<ReturnType<typeof Native.queryStatisticsCollectionForQuantity>>
-    ]
-  ) => void
+  unit?: TUnit
 ) {
   const actualUnit = await ensureUnit(identifier, unit)
   const toDate = to || new Date()
-  const withUpdates = Boolean(updateCallback)
 
   const rawResponse = await Native.queryStatisticsCollectionForQuantity(
     identifier,
     actualUnit,
     from.toISOString(),
     toDate.toISOString(),
-    options,
-    withUpdates,
-    updateCallback ?? ((error, results) => {})
+    options
   )
 
   const response = rawResponse.map((record) => {

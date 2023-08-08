@@ -409,7 +409,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
     }
 
     override func supportedEvents() -> [String]! {
-      return ["onChange"]
+      return ["onChange", "onStatsCollectionUpdate"]
     }
 
     @objc(enableBackgroundDelivery:updateFrequency:resolve:reject:)
@@ -1366,15 +1366,13 @@ class ReactNativeHealthkit: RCTEventEmitter {
       }
   }
 
-    @objc(queryStatisticsCollectionForQuantity:unitString:from:to:options:withUpdates:updateCallback:resolve:reject:)
+    @objc(queryStatisticsCollectionForQuantity:unitString:from:to:options:resolve:reject:)
     func queryStatisticsCollectionForQuantity(
         typeIdentifier: String,
         unitString: String,
         from: Date,
         to: Date,
         options: NSArray,
-        withUpdates: Bool,
-        updateCallback: @escaping RCTResponseSenderBlock,
         resolve: @escaping RCTPromiseResolveBlock,
         reject: @escaping RCTPromiseRejectBlock
     ) {
@@ -1439,8 +1437,6 @@ class ReactNativeHealthkit: RCTEventEmitter {
 
         let unit = HKUnit.init(from: unitString)
 
-        let queryId = UUID().uuidString
-
         let q = HKStatisticsCollectionQuery.init(quantityType: quantityType,
                                         quantitySamplePredicate: predicate,
                                         options: opts,
@@ -1467,41 +1463,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
             reject(GENERIC_ERROR, err.localizedDescription, err)
         }
 
-        if withUpdates {
-            q.statisticsUpdateHandler = {
-                (_, result, resultsCollection, error) in
-
-                if let err = error {
-                    return // updateCallback([err.localizedDescription, NSNull()])
-                }
-
-                var serializedStats: [String: Any]?
-                var serializedStatsCollection: NSMutableArray = []
-
-                if let stats = result {
-                    serializedStats = serializeStatsFromCollection(stats: stats, unit: unit)
-                }
-
-                if let statsCollection = resultsCollection {
-                    for s in statsCollection.statistics() {
-                        if let stats = s as? HKStatistics {
-                            let serialized = serializeStatsFromCollection(stats: stats, unit: unit)
-                            serializedStatsCollection.add(serialized)
-                        }
-                    }
-                }
-
-                let data: NSDictionary = [
-                    "stats": serializedStats,
-                    "statsCollection": serializedStatsCollection
-                ]
-
-                // updateCallback([NSNull(), data])
-            }
-        }
-
         store.execute(q)
-        self._runningQueries[queryId] = q
     }
 
     @objc(queryActivitySummaryForQuantity:timeUnitString:from:to:resolve:reject:)

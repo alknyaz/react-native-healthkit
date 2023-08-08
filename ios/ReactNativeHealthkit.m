@@ -203,8 +203,6 @@ RCT_EXTERN_METHOD(queryStatisticsCollectionForQuantity:(NSString)typeIdentifier
                   from:(NSDate)from
                   to:(NSDate)to
                   options:(NSArray)options
-                  withUpdates:(BOOL)withUpdates
-                  updateCallback:(RCTResponseSenderBlock *)updateCallback
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject
 )
