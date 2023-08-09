@@ -1366,14 +1366,14 @@ class ReactNativeHealthkit: RCTEventEmitter {
       }
   }
 
-    @objc(queryStatisticsCollectionForQuantity:unitString:from:to:options:updateCallback:resolve:reject:)
+    @objc(queryStatisticsCollectionForQuantity:unitString:from:to:options:subscribe:resolve:reject:)
     func queryStatisticsCollectionForQuantity(
         typeIdentifier: String,
         unitString: String,
         from: Date,
         to: Date,
         options: NSArray,
-        updateCallback: @escaping RCTResponseSenderBlock,
+        subscribe: Bool,
         resolve: @escaping RCTPromiseResolveBlock,
         reject: @escaping RCTPromiseRejectBlock
     ) {
@@ -1404,41 +1404,11 @@ class ReactNativeHealthkit: RCTEventEmitter {
             return reject(TYPE_IDENTIFIER_ERROR, "Failed to initialize " + typeIdentifier, nil)
         }
 
-        var opts = HKStatisticsOptions.init()
-
-        for o in options {
-            let str = o as! String
-            if str == "cumulativeSum" {
-                opts.insert(HKStatisticsOptions.cumulativeSum)
-            } else if str == "discreteAverage" {
-                opts.insert(HKStatisticsOptions.discreteAverage)
-            } else if str == "discreteMax" {
-                opts.insert(HKStatisticsOptions.discreteMax)
-            } else if str == "discreteMin" {
-                opts.insert(HKStatisticsOptions.discreteMin)
-            }
-            if #available(iOS 12, *) {
-                    if str == "discreteMostRecent" {
-                        opts.insert(HKStatisticsOptions.discreteMostRecent)
-                    }
-            }
-            if #available(iOS 13, *) {
-                if str == "duration" {
-                    opts.insert(HKStatisticsOptions.duration)
-                }
-                if str == "mostRecent" {
-                    opts.insert(HKStatisticsOptions.mostRecent)
-                }
-            }
-
-            if str == "separateBySource" {
-                opts.insert(HKStatisticsOptions.separateBySource)
-            }
-        }
+        var opts = parseStatisticsOptions(options)
 
         let unit = HKUnit.init(from: unitString)
 
-        let queryId = UUID().uuidString
+        let queryId = subscribe ? UUID().uuidString : ""
 
         let q = HKStatisticsCollectionQuery.init(quantityType: quantityType,
                                         quantitySamplePredicate: predicate,
@@ -1450,7 +1420,10 @@ class ReactNativeHealthkit: RCTEventEmitter {
 
             guard let err = error else {
                 guard let statsCollection = results else {
-                    return resolve([])
+                    return resolve([
+                        "queryId": queryId,
+                        "data": []
+                    ])
                 }
                 let arr: NSMutableArray = []
                 
@@ -1461,26 +1434,55 @@ class ReactNativeHealthkit: RCTEventEmitter {
                     }
                 }
 
-                return resolve(arr)
+                return resolve([
+                    "queryId": queryId,
+                    "data": arr
+                ])
             }
             reject(GENERIC_ERROR, err.localizedDescription, err)
         }
 
-        q.statisticsUpdateHandler = {
-            (q, stats, statsCollection, error) in
+        if subscribe {
+            q.statisticsUpdateHandler = {
+                (q, stats, statsCollection, error) in
 
-            if let err = error {
-                return
-            }
+                if let err = error {
+                    return
+                }
 
-            if let stats = stats {
-                let statsSerialized = serializeStatsFromCollection(stats: stats, unit: unit)
-                updateCallback([nil, statsSerialized])
+                var serializedStats: HKStatistics?
+                var serializedStatsCollection: NSMutableArray = []
+
+                if let stats = stats {
+                    statsSerialized = serializeStatsFromCollection(stats: stats, unit: unit)
+                }
+
+                if let statsCollection = statsCollection {
+                    for s in statsCollection.statistics() {
+                        if let stats = s {
+                            serializedStatsCollection.add(stats)
+                        }
+                    }
+                }
+
+                let data: NSDictionary = [
+                    "stats": serializedStats,
+                    "statsCollection": serializedStatsCollection
+                ]
+
+                DispatchQueue.main.async {
+                    if self.bridge != nil && self.bridge.isValid {
+                        self.sendEvent(withName: "onStatsCollectionUpdate", body: [
+                            "queryId": queryId,
+                            "data": data
+                        ])
+                    }
+                }
             }
+            self._runningQueries[queryId] = q
         }
 
         store.execute(q)
-        self._runningQueries[queryId]
     }
 
     @objc(queryActivitySummaryForQuantity:timeUnitString:from:to:resolve:reject:)

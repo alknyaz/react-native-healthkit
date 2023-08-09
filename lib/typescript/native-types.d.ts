@@ -441,7 +441,10 @@ export type HKStatistics<TIdentifier extends HKQuantityTypeIdentifier, TUnit ext
     readonly sumQuantity?: HKQuantity<TIdentifier, TUnit>;
     readonly duration?: HKQuantity<HKQuantityTypeIdentifier, TimeUnit>;
 };
-export type QueryStatisticsCollectionResponseRaw<TIdentifier extends HKQuantityTypeIdentifier, TUnit extends UnitForIdentifier<TIdentifier>> = HKStatistics<TIdentifier, TUnit>[];
+export type QueryStatisticsCollectionResponseRaw<TIdentifier extends HKQuantityTypeIdentifier, TUnit extends UnitForIdentifier<TIdentifier>> = {
+    queryId: string;
+    data: HKStatistics<TIdentifier, TUnit>[];
+};
 export type QueryActivitySummaryForQuantityRaw<TEnergyUnit extends EnergyUnit, TTimeUnit extends TimeUnit> = {
     startDate: string | Date;
     readonly activeEnergyBurned: HKQuantity<HKQuantityTypeIdentifier.activeEnergyBurned, TEnergyUnit>;
@@ -931,17 +934,26 @@ type ReactNativeHealthkitTypeNative = {
     readonly querySources: <TIdentifier extends HKCategoryTypeIdentifier | HKQuantityTypeIdentifier>(identifier: TIdentifier) => Promise<readonly HKSource[]>;
     readonly saveCategorySample: <T extends HKCategoryTypeIdentifier>(identifier: T, value: HKCategoryValueForIdentifier<T>, start: string, end: string, metadata: unknown) => Promise<boolean>;
     readonly queryStatisticsForQuantity: <TIdentifier extends HKQuantityTypeIdentifier, TUnit extends UnitForIdentifier<TIdentifier>>(identifier: HKQuantityTypeIdentifier, unit: TUnit, from: string, to: string, options: readonly HKStatisticsOptions[]) => Promise<QueryStatisticsResponseRaw<TIdentifier, TUnit>>;
-    readonly queryStatisticsCollectionForQuantity: <TIdentifier extends HKQuantityTypeIdentifier, TUnit extends UnitForIdentifier<TIdentifier>>(identifier: HKQuantityTypeIdentifier, unit: TUnit, from: string, to: string, options: readonly HKStatisticsOptions[], updateCallback: (error: string, data: any) => void) => Promise<QueryStatisticsCollectionResponseRaw<TIdentifier, TUnit>>;
+    readonly queryStatisticsCollectionForQuantity: <TIdentifier extends HKQuantityTypeIdentifier, TUnit extends UnitForIdentifier<TIdentifier>>(identifier: HKQuantityTypeIdentifier, unit: TUnit, from: string, to: string, options: readonly HKStatisticsOptions[], subscribe: boolean) => Promise<QueryStatisticsCollectionResponseRaw<TIdentifier, TUnit>>;
     readonly queryActivitySummaryForQuantity: <TEnergyUnit extends EnergyUnit, TTimeUnit extends TimeUnit>(energyUnit: TEnergyUnit, timeUnit: TTimeUnit, from: string, to: string) => Promise<QueryActivitySummaryForQuantityRaw<TEnergyUnit, TTimeUnit>>;
     readonly getPreferredUnits: (identifiers: readonly HKQuantityTypeIdentifier[]) => Promise<TypeToUnitMapping>;
     readonly getWorkoutRoutes: (workoutUUID: string) => Promise<readonly WorkoutRoute[]>;
 };
 declare const Native: ReactNativeHealthkitTypeNative;
-type OnChangeCallback = ({ typeIdentifier, }: {
-    readonly typeIdentifier: HKSampleTypeIdentifier;
-}) => void;
+export type EventCallback = {
+    onChange: (res: {
+        readonly typeIdentifier: HKSampleTypeIdentifier;
+    }) => void;
+    onStatsCollectionUpdate: <TIdentifier extends HKQuantityTypeIdentifier, TUnit extends UnitForIdentifier<TIdentifier>>(res: {
+        queryId: string;
+        data: {
+            stats: HKStatistics<TIdentifier, TUnit>;
+            statsCollection: HKStatistics<TIdentifier, TUnit>[];
+        };
+    }) => void;
+};
 interface HealthkitEventEmitter extends NativeEventEmitter {
-    readonly addListener: (eventType: 'onChange', callback: OnChangeCallback) => EmitterSubscription;
+    addListener<T extends keyof EventCallback, C = EventCallback[T]>(eventType: T, callback: C): EmitterSubscription;
 }
 export declare const EventEmitter: HealthkitEventEmitter;
 export default Native;

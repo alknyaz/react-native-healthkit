@@ -1,6 +1,7 @@
 import { NativeEventEmitter, NativeModules, Platform } from 'react-native'
 
 import type { EmitterSubscription, NativeModule } from 'react-native'
+import Healthkit from '.'
 
 /**
  * See https://developer.apple.com/documentation/healthkit/hkworkouttypeidentifier
@@ -534,7 +535,7 @@ export type HKStatistics<
 export type QueryStatisticsCollectionResponseRaw<
   TIdentifier extends HKQuantityTypeIdentifier,
   TUnit extends UnitForIdentifier<TIdentifier>
-> = HKStatistics<TIdentifier, TUnit>[];
+> = { queryId: string, data: HKStatistics<TIdentifier, TUnit>[] };
 
 export type QueryActivitySummaryForQuantityRaw<
   TEnergyUnit extends EnergyUnit,
@@ -1499,7 +1500,7 @@ type ReactNativeHealthkitTypeNative = {
     from: string,
     to: string,
     options: readonly HKStatisticsOptions[],
-    updateCallback: (error: string, data: any) => void
+    subscribe: boolean
   ) => Promise<QueryStatisticsCollectionResponseRaw<TIdentifier, TUnit>>;
   readonly queryActivitySummaryForQuantity: <
     TEnergyUnit extends EnergyUnit,
@@ -1520,17 +1521,27 @@ type ReactNativeHealthkitTypeNative = {
 
 const Native = NativeModules.ReactNativeHealthkit as ReactNativeHealthkitTypeNative
 
-type OnChangeCallback = ({
-  typeIdentifier,
-}: {
-  readonly typeIdentifier: HKSampleTypeIdentifier;
-}) => void;
+export type EventCallback = {
+  onChange: (res: { readonly typeIdentifier: HKSampleTypeIdentifier }) => void,
+  onStatsCollectionUpdate: <
+    TIdentifier extends HKQuantityTypeIdentifier,
+    TUnit extends UnitForIdentifier<TIdentifier>
+  >(
+    res: {
+      queryId: string,
+      data: {
+        stats: HKStatistics<TIdentifier, TUnit>,
+        statsCollection: HKStatistics<TIdentifier, TUnit>[]
+      }
+    }
+  ) => void
+}
 
 interface HealthkitEventEmitter extends NativeEventEmitter {
-  readonly addListener: (
-    eventType: 'onChange',
-    callback: OnChangeCallback
-  ) => EmitterSubscription;
+  addListener<T extends keyof EventCallback, C = EventCallback[T]>(
+    eventType: T,
+    callback: C
+  ): EmitterSubscription;
 }
 
 export const EventEmitter = new NativeEventEmitter(

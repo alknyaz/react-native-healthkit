@@ -1,4 +1,4 @@
-import type { EnergyUnit, HKCategorySampleRaw, HKCategoryTypeIdentifier, HKCorrelationRaw, HKCorrelationTypeIdentifier, HKDevice, HKHeartbeatSeriesSampleRaw, HKQuantityTypeIdentifier, HKSourceRevision, HKUnit, HKWorkoutRaw, LengthUnit, MetadataMapperForQuantityIdentifier, QueryActivitySummaryForQuantityRaw, QueryStatisticsCollectionResponseRaw, QueryStatisticsResponseRaw, TimeUnit, UnitForIdentifier } from './native-types';
+import type { EnergyUnit, HKCategorySampleRaw, HKCategoryTypeIdentifier, HKCorrelationRaw, HKCorrelationTypeIdentifier, HKDevice, HKHeartbeatSeriesSampleRaw, HKQuantityTypeIdentifier, HKSourceRevision, HKStatistics, HKUnit, HKWorkoutRaw, LengthUnit, MetadataMapperForQuantityIdentifier, QueryActivitySummaryForQuantityRaw, QueryStatisticsResponseRaw, TimeUnit, UnitForIdentifier } from './native-types';
 export * from './native-types';
 export interface QueryWorkoutsOptions<TEnergy extends HKUnit, TDistance extends HKUnit> extends GenericQueryOptions {
     readonly energyUnit?: TEnergy;
@@ -40,10 +40,14 @@ export interface QueryStatisticsResponse<TIdentifier extends HKQuantityTypeIdent
         readonly to: Date;
     };
 }
-export type QueryStatisticsCollectionResponse<TIdentifier extends HKQuantityTypeIdentifier, TUnit extends UnitForIdentifier<TIdentifier>> = (Omit<QueryStatisticsCollectionResponseRaw<TIdentifier, TUnit>[number], "startDate" | "endDate"> & {
-    startDate: Date;
-    endDate: Date;
-})[];
+export type QueryStatisticsCollectionResponse<TIdentifier extends HKQuantityTypeIdentifier, TUnit extends UnitForIdentifier<TIdentifier>, Subscribe extends boolean> = {
+    queryId: string;
+    data: Omit<HKStatistics<TIdentifier, TUnit>, "startDate" | "endDate"> & {
+        startDate: Date;
+        endDate: Date;
+    }[];
+    unsubscribe?: () => void;
+};
 export type QueryActivitySummaryResponse<TEnergyUnit extends EnergyUnit, TTimeUnit extends TimeUnit> = (Omit<QueryActivitySummaryForQuantityRaw<TEnergyUnit, TTimeUnit>[number], "startDate"> & {
     startDate: Date;
 })[];

@@ -208,6 +208,14 @@ RCT_EXTERN_METHOD(queryStatisticsCollectionForQuantity:(NSString)typeIdentifier
                   reject:(RCTPromiseRejectBlock)reject
 )
 
+RCT_EXTERN_METHOD(subscribeToStatsCollectionUpdates:(NSString)typeIdentifier
+                  unitString:(NSString)unitString
+                  from:(NSDate)from
+                  to:(NSDate)to
+                  options:(NSArray)options
+                  callback:(RCTResponseSenderBlock)callback
+)
+
 RCT_EXTERN_METHOD(queryActivitySummaryForQuantity:(NSString)energyUnitString
                   timeUnitString:(NSString)timeUnitString
                   from:(NSDate)from
