@@ -11,7 +11,6 @@ async function queryStatisticsCollectionForQuantity<TIdentifier extends HKQuanti
   to?: Date,
   unit?: TUnit,
   updateCallback?: (
-    error: string,
     data: { stats: HKStatistics<TIdentifier, TUnit>, statsCollection: HKStatistics<TIdentifier, TUnit>[] }
   ) => void
 ) {
@@ -34,22 +33,21 @@ async function queryStatisticsCollectionForQuantity<TIdentifier extends HKQuanti
     data: rawResponse.data.map((record) => {
       record.startDate = new Date(record.startDate)
       record.endDate = new Date(record.endDate)
-      return record as Omit<HKStatistics<TIdentifier, TUnit>, "startDate" | "endDate"> & { startDate: Date; endDate: Date; }
+      return record as (Omit<HKStatistics<TIdentifier, TUnit>, "startDate" | "endDate"> & { startDate: Date; endDate: Date; })
     }),
   }
 
-  const onUpdate = (
-    update: {
-      queryId: string,
-      data: { stats: HKStatistics<TIdentifier, TUnit>, statsCollection: HKStatistics<TIdentifier, TUnit>[] }
-    }
-  ) => {
-    if (update.queryId === response.queryId) {
-      updateCallback?.("", update.data)
-    }
-  }
-
   if (subscribe) {
+    const onUpdate = (
+      update: {
+        queryId: string,
+        data: { stats: HKStatistics<TIdentifier, TUnit>, statsCollection: HKStatistics<TIdentifier, TUnit>[] }
+      }
+    ) => {
+      if (update.queryId === response.queryId) {
+        updateCallback?.(update.data)
+      }
+    }
     const subscription = EventEmitter.addListener('onStatsCollectionUpdate', onUpdate)
     
     response.unsubscribe = async () => {
