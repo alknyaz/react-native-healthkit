@@ -1404,7 +1404,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
             return reject(TYPE_IDENTIFIER_ERROR, "Failed to initialize " + typeIdentifier, nil)
         }
 
-        var opts = parseStatisticsOptions(options)
+        let opts: HKStatisticsOptions = parseStatisticsOptions(options: options)
 
         let unit = HKUnit.init(from: unitString)
 
@@ -1454,7 +1454,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
                 var serializedStatsCollection: NSMutableArray = []
 
                 if let stats = stats {
-                    statsSerialized = serializeStatsFromCollection(stats: stats, unit: unit)
+                    serializedStats = serializeStatsFromCollection(stats: stats, unit: unit)
                 }
 
                 if let statsCollection = statsCollection {
