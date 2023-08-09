@@ -1444,9 +1444,10 @@ class ReactNativeHealthkit: RCTEventEmitter {
 
         if subscribe {
             q.statisticsUpdateHandler = {
-                (q, stats, statsCollection, error) in
+                (q, stats: HKStatistics?, statsCollection: HKStatisticsCollection?, error) in
 
                 if let err = error {
+                    NSLog(format: err.localizedDescription)
                     return
                 }
 
