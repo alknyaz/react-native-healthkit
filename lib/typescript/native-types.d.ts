@@ -445,7 +445,7 @@ export type QueryStatisticsCollectionResponseRaw<TIdentifier extends HKQuantityT
     queryId: string;
     data: HKStatistics<TIdentifier, TUnit>[];
 };
-export type QueryActivitySummaryForQuantityRaw<TEnergyUnit extends EnergyUnit, TTimeUnit extends TimeUnit> = {
+export type HKActivitySummary<TEnergyUnit extends EnergyUnit, TTimeUnit extends TimeUnit> = {
     startDate: string | Date;
     readonly activeEnergyBurned: HKQuantity<HKQuantityTypeIdentifier.activeEnergyBurned, TEnergyUnit>;
     readonly activeEnergyBurnedGoal: HKQuantity<HKQuantityTypeIdentifier.activeEnergyBurned, TEnergyUnit>;
@@ -457,7 +457,11 @@ export type QueryActivitySummaryForQuantityRaw<TEnergyUnit extends EnergyUnit, T
     readonly appleStandHours: HKQuantity<HKQuantityTypeIdentifier, HKUnits.Count>;
     readonly standHoursGoal: HKQuantity<HKQuantityTypeIdentifier, HKUnits.Count>;
     readonly appleStandHoursGoal: HKQuantity<HKQuantityTypeIdentifier, HKUnits.Count>;
-}[];
+};
+export type QueryActivitySummaryForQuantityRaw<TEnergyUnit extends EnergyUnit, TTimeUnit extends TimeUnit> = {
+    queryId: string;
+    data: HKActivitySummary<TEnergyUnit, TTimeUnit>[];
+};
 /**
  * https://developer.apple.com/documentation/healthkit/hkcategoryvaluecervicalmucusquality
  */
@@ -950,6 +954,10 @@ export type EventCallback = {
             stats: HKStatistics<TIdentifier, TUnit>;
             statsCollection: HKStatistics<TIdentifier, TUnit>[];
         };
+    }) => void;
+    onActivitySummaryUpdate: <TEnergyUnit extends EnergyUnit, TTimeUnit extends TimeUnit>(res: {
+        queryId: string;
+        data: HKActivitySummary<TEnergyUnit, TTimeUnit>[];
     }) => void;
 };
 interface HealthkitEventEmitter extends NativeEventEmitter {

@@ -1,5 +1,6 @@
 import type {
   EnergyUnit,
+  HKActivitySummary,
   HKCategorySampleRaw,
   HKCategoryTypeIdentifier,
   HKCorrelationRaw,
@@ -14,7 +15,6 @@ import type {
   LengthUnit,
   MetadataMapperForQuantityIdentifier,
   QueryActivitySummaryForQuantityRaw,
-  QueryStatisticsCollectionResponseRaw,
   QueryStatisticsResponseRaw,
   TimeUnit,
   UnitForIdentifier,
@@ -96,9 +96,11 @@ export type QueryStatisticsCollectionResponse<
 export type QueryActivitySummaryResponse<
   TEnergyUnit extends EnergyUnit,
   TTimeUnit extends TimeUnit
-> = (Omit<QueryActivitySummaryForQuantityRaw<TEnergyUnit, TTimeUnit>[number], "startDate"> & {
-  startDate: Date
-})[]
+> = {
+  queryId: string,
+  data: (Omit<HKActivitySummary<TEnergyUnit, TTimeUnit>, "startDate"> & { startDate: Date })[],
+  unsubscribe?: () => void
+}
 
 export type HKCategorySampleForSaving =Omit<HKCategorySample, 'device' | 'endDate' | 'startDate' | 'uuid'>
 

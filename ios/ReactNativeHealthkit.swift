@@ -409,7 +409,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
     }
 
     override func supportedEvents() -> [String]! {
-      return ["onChange", "onStatsCollectionUpdate"]
+      return ["onChange", "onStatsCollectionUpdate", "onActivitySummaryUpdate", "onWorkoutUpdate"]
     }
 
     @objc(enableBackgroundDelivery:updateFrequency:resolve:reject:)
@@ -1471,8 +1471,6 @@ class ReactNativeHealthkit: RCTEventEmitter {
                     "statsCollection": serializedStatsCollection
                 ]
 
-                NSLog("data: ", data)
-
                 DispatchQueue.main.async {
                     if self.bridge != nil && self.bridge.isValid {
                         self.sendEvent(withName: "onStatsCollectionUpdate", body: [
@@ -1488,12 +1486,13 @@ class ReactNativeHealthkit: RCTEventEmitter {
         store.execute(q)
     }
 
-    @objc(queryActivitySummaryForQuantity:timeUnitString:from:to:resolve:reject:)
+    @objc(queryActivitySummaryForQuantity:timeUnitString:from:to:subscribe:resolve:reject:)
     func queryActivitySummaryForQuantity(
         energyUnitString: String,
         timeUnitString: String,
         from: Date,
         to: Date,
+        subscribe: Bool,
         resolve: @escaping RCTPromiseResolveBlock,
         reject: @escaping RCTPromiseRejectBlock
     ) {
@@ -1519,7 +1518,9 @@ class ReactNativeHealthkit: RCTEventEmitter {
         let timeUnit = HKUnit.init(from: timeUnitString)
         let energyUnit = HKUnit.init(from: energyUnitString)
 
-        let q = HKActivitySummaryQuery(predicate: summariesWithinRange) {
+        let queryId = subscribe ? UUID().uuidString : ""
+
+        let q: HKActivitySummaryQuery = HKActivitySummaryQuery(predicate: summariesWithinRange) {
             (query, summariesOrNil, errorOrNil) in
     
             if let err = errorOrNil {
@@ -1534,63 +1535,43 @@ class ReactNativeHealthkit: RCTEventEmitter {
 
             for s in summaries {
                 if let summary = s as? HKActivitySummary {
-                    guard let startDate = summary.dateComponents(for: calendar).date else {
-                        fatalError("Should not fail")
-                    }
-                    var dic = [String: Any?]()
-                    dic.updateValue(self._dateFormatter.string(from: startDate), forKey: "startDate")
-                    dic.updateValue(
-                        serializeQuantity(unit: energyUnit, quantity: summary.activeEnergyBurned),
-                        forKey: "activeEnergyBurned"
-                    )
-                    dic.updateValue(
-                        serializeQuantity(unit: energyUnit, quantity: summary.activeEnergyBurnedGoal),
-                        forKey: "activeEnergyBurnedGoal"
-                    )
-                    if #available(iOS 14, *) {
-                        dic.updateValue(
-                            serializeQuantity(unit: timeUnit, quantity: summary.appleMoveTime),
-                            forKey: "appleMoveTime"
-                        )
-                        dic.updateValue(
-                            serializeQuantity(unit: timeUnit, quantity: summary.appleMoveTimeGoal),
-                            forKey: "appleMoveTimeGoal"
-                        )
-                    }
-                    dic.updateValue(
-                        serializeQuantity(unit: timeUnit, quantity: summary.appleExerciseTime),
-                        forKey: "appleExerciseTime"
-                    )
-                    dic.updateValue(
-                        serializeQuantity(unit: timeUnit, quantity: summary.appleExerciseTimeGoal),
-                        forKey: "appleExerciseTimeGoal"
-                    )
-                    if #available(iOS 16, *) {
-                        dic.updateValue(
-                            serializeQuantity(unit: timeUnit, quantity: summary.exerciseTimeGoal),
-                            forKey: "exerciseTimeGoal"
-                        )
-                    }
-                    dic.updateValue(
-                        serializeQuantity(unit: HKUnit.count(), quantity: summary.appleStandHours),
-                        forKey: "appleStandHours"
-                    )
-                    if #available(iOS 16, *) {
-                        dic.updateValue(
-                            serializeQuantity(unit: HKUnit.count(), quantity: summary.standHoursGoal),
-                            forKey: "standHoursGoal"
-                        )
-                    }
-                    dic.updateValue(
-                        serializeQuantity(unit: HKUnit.count(), quantity: summary.appleStandHoursGoal),
-                        forKey: "appleStandHoursGoal"
-                    )
-                    
-                    arr.add(dic)
+                    serialized = serializeActivitySummary(summary: summary, calendar: calendar)
+                    arr.add(serialized)
                 }
             }
 
             return resolve(arr)
+        }
+
+        if subscribe {
+            q.updateHandler = {
+                (q, activitySummaries: [HKActivitySummary]?, error) in
+
+                if let err = error {
+                    fatalError(err.localizedDescription)
+                    return
+                }
+                guard let activitySummaries = activitySummaries else {
+                    return
+                }
+
+                var arr: NSMutableArray = []
+
+                for summary in activitySummaries {
+                    let serialized = serializeActivitySummary(summary: summary, calendar: calendar)
+                    arr.add(serialized)
+                }
+
+                DispatchQueue.main.async {
+                    if self.bridge != nil && self.bridge.isValid {
+                        self.sendEvent(withName: "onActivitySummaryUpdate", body: [
+                            "queryId": queryId,
+                            "data": arr
+                        ])
+                    }
+                }
+            }
+            self._runningQueries[queryId] = q
         }
 
         store.execute(q)

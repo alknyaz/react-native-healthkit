@@ -231,3 +231,58 @@ func serializeStatsFromCollection(stats: HKStatistics, unit: HKUnit) -> [String:
     
     return dic
 }
+
+func serializeActivitySummary(summary: HKActivitySummary, calendar: Calendar) -> [String: Any?] {
+    guard let startDate = summary.dateComponents(for: calendar).date else {
+        fatalError("Should not fail")
+    }
+    var dic = [String: Any?]()
+    dic.updateValue(_dateFormatter.string(from: startDate), forKey: "startDate")
+    dic.updateValue(
+        serializeQuantity(unit: energyUnit, quantity: summary.activeEnergyBurned),
+        forKey: "activeEnergyBurned"
+    )
+    dic.updateValue(
+        serializeQuantity(unit: energyUnit, quantity: summary.activeEnergyBurnedGoal),
+        forKey: "activeEnergyBurnedGoal"
+    )
+    if #available(iOS 14, *) {
+        dic.updateValue(
+            serializeQuantity(unit: timeUnit, quantity: summary.appleMoveTime),
+            forKey: "appleMoveTime"
+        )
+        dic.updateValue(
+            serializeQuantity(unit: timeUnit, quantity: summary.appleMoveTimeGoal),
+            forKey: "appleMoveTimeGoal"
+        )
+    }
+    dic.updateValue(
+        serializeQuantity(unit: timeUnit, quantity: summary.appleExerciseTime),
+        forKey: "appleExerciseTime"
+    )
+    dic.updateValue(
+        serializeQuantity(unit: timeUnit, quantity: summary.appleExerciseTimeGoal),
+        forKey: "appleExerciseTimeGoal"
+    )
+    if #available(iOS 16, *) {
+        dic.updateValue(
+            serializeQuantity(unit: timeUnit, quantity: summary.exerciseTimeGoal),
+            forKey: "exerciseTimeGoal"
+        )
+    }
+    dic.updateValue(
+        serializeQuantity(unit: HKUnit.count(), quantity: summary.appleStandHours),
+        forKey: "appleStandHours"
+    )
+    if #available(iOS 16, *) {
+        dic.updateValue(
+            serializeQuantity(unit: HKUnit.count(), quantity: summary.standHoursGoal),
+            forKey: "standHoursGoal"
+        )
+    }
+    dic.updateValue(
+        serializeQuantity(unit: HKUnit.count(), quantity: summary.appleStandHoursGoal),
+        forKey: "appleStandHoursGoal"
+    )
+    return dic
+}

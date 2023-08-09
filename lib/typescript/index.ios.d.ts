@@ -39,7 +39,11 @@ declare const Healthkit: {
     queryQuantitySamplesWithAnchor: import("./utils/queryQuantitySamplesWithAnchor").QueryQuantitySamplesWithAnchorFn;
     queryStatisticsForQuantity: typeof queryStatisticsForQuantity;
     queryStatisticsCollectionForQuantity: typeof queryStatisticsCollectionForQuantity;
-    queryActivitySummaryForQuantity: import("./utils/queryActivitySummaryForQuantity").QueryActivitySummaryForQuantityFn;
+    queryActivitySummaryForQuantity: <TEnergyUnit extends import("./native-types").UnitOfEnergy, TTimeUnit extends import("./native-types").UnitOfTime>(options: Omit<import("./types").GenericQueryOptions, "anchor" | "limit" | "ascending"> & {
+        readonly energyUnit?: TEnergyUnit | undefined;
+        readonly timeUnit?: TTimeUnit | undefined;
+        readonly updateCallback?: ((data: import("./native-types").HKActivitySummary<TEnergyUnit, TTimeUnit>[]) => void) | undefined;
+    }) => Promise<import("./types").QueryActivitySummaryResponse<TEnergyUnit, TTimeUnit>>;
     queryWorkouts: typeof queryWorkouts;
     querySources: import("./utils/querySources").QuerySourcesFn;
     requestAuthorization: (read: readonly import("./native-types").HealthkitReadAuthorization[], write?: readonly import("./native-types").HKSampleTypeIdentifier[]) => Promise<boolean>;

@@ -72,7 +72,7 @@ const Healthkit: typeof ReactNativeHealthkit = {
     duration: undefined,
   })),
   queryStatisticsCollectionForQuantity: UnavailableFn(Promise.resolve({ queryId: "", data: [] })),
-  queryActivitySummaryForQuantity: UnavailableFn(Promise.resolve([])),
+  queryActivitySummaryForQuantity: UnavailableFn(Promise.resolve({ queryId: "", data: [] })),
   queryWorkouts: UnavailableFn(Promise.resolve([])),
   querySources: UnavailableFn(Promise.resolve([])),
   requestAuthorization: UnavailableFn(Promise.resolve(false)),
