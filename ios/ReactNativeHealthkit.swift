@@ -1471,6 +1471,8 @@ class ReactNativeHealthkit: RCTEventEmitter {
                     "statsCollection": serializedStatsCollection
                 ]
 
+                NSLog("data: ", data)
+
                 DispatchQueue.main.async {
                     if self.bridge != nil && self.bridge.isValid {
                         self.sendEvent(withName: "onStatsCollectionUpdate", body: [
