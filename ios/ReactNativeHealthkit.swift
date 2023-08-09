@@ -1450,7 +1450,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
                     return
                 }
 
-                var serializedStats: NSDictionary?
+                var serializedStats: [String : Any?]?
                 var serializedStatsCollection: NSMutableArray = []
 
                 if let stats = stats {
