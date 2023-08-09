@@ -1467,6 +1467,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
                 }
 
                 let data = [
+                    "hello": "Hello",
                     "stats": serializedStats,
                     "statsCollection": serializedStatsCollection
                 ]
