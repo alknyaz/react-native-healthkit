@@ -151,7 +151,7 @@ func objectTypeFromString(typeIdentifier: String) -> HKObjectType? {
     return nil
 }
 
-func parseStatisticsOptions(options: NSArray) {
+func parseStatisticsOptions(options: NSArray) -> HKStatisticsOptions {
     var opts = HKStatisticsOptions.init()
 
     for o in options {
