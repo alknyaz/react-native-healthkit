@@ -1447,7 +1447,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
                 (q, stats: HKStatistics?, statsCollection: HKStatisticsCollection?, error) in
 
                 if let err = error {
-                    throw err
+                    fatal_error(err.localizedDescription)
                 }
 
                 var serializedStats: [String : Any?]?
