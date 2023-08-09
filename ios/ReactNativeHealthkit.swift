@@ -1466,7 +1466,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
                     }
                 }
 
-                let data: NSDictionary = [
+                let data = [
                     "stats": serializedStats,
                     "statsCollection": serializedStatsCollection
                 ]
