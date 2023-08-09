@@ -83,14 +83,13 @@ export interface QueryStatisticsResponse<TIdentifier extends HKQuantityTypeIdent
 
 export type QueryStatisticsCollectionResponse<
   TIdentifier extends HKQuantityTypeIdentifier,
-  TUnit extends UnitForIdentifier<TIdentifier>,
-  Subscribe extends boolean
+  TUnit extends UnitForIdentifier<TIdentifier>
 > = {
   queryId: string,
-  data: Omit<HKStatistics<TIdentifier, TUnit>, "startDate" | "endDate"> & {
+  data: (Omit<HKStatistics<TIdentifier, TUnit>, "startDate" | "endDate"> & {
     startDate: Date,
     endDate: Date
-  }[],
+  })[],
   unsubscribe?: () => void
 }
 

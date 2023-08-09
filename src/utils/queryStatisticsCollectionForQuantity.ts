@@ -29,7 +29,7 @@ async function queryStatisticsCollectionForQuantity<TIdentifier extends HKQuanti
     subscribe
   )
 
-  const response: QueryStatisticsCollectionResponse<TIdentifier, TUnit, typeof subscribe> = {
+  const response: QueryStatisticsCollectionResponse<TIdentifier, TUnit> = {
     queryId: rawResponse.queryId,
     data: rawResponse.data.map((record) => {
       record.startDate = new Date(record.startDate)

@@ -40,12 +40,12 @@ export interface QueryStatisticsResponse<TIdentifier extends HKQuantityTypeIdent
         readonly to: Date;
     };
 }
-export type QueryStatisticsCollectionResponse<TIdentifier extends HKQuantityTypeIdentifier, TUnit extends UnitForIdentifier<TIdentifier>, Subscribe extends boolean> = {
+export type QueryStatisticsCollectionResponse<TIdentifier extends HKQuantityTypeIdentifier, TUnit extends UnitForIdentifier<TIdentifier>> = {
     queryId: string;
-    data: Omit<HKStatistics<TIdentifier, TUnit>, "startDate" | "endDate"> & {
+    data: (Omit<HKStatistics<TIdentifier, TUnit>, "startDate" | "endDate"> & {
         startDate: Date;
         endDate: Date;
-    }[];
+    })[];
     unsubscribe?: () => void;
 };
 export type QueryActivitySummaryResponse<TEnergyUnit extends EnergyUnit, TTimeUnit extends TimeUnit> = (Omit<QueryActivitySummaryForQuantityRaw<TEnergyUnit, TTimeUnit>[number], "startDate"> & {
