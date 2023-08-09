@@ -1460,7 +1460,8 @@ class ReactNativeHealthkit: RCTEventEmitter {
                 if let statsCollection = statsCollection {
                     for s in statsCollection.statistics() {
                         if let stats = s as? HKStatistics {
-                            serializedStatsCollection.add(stats)
+                            let serialized = serializeStatsFromCollection(stats: stats, unit: unit)
+                            serializedStatsCollection.add(serializedStats)
                         }
                     }
                 }
