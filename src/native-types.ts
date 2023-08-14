@@ -1431,7 +1431,7 @@ type ReactNativeHealthkitTypeNative = {
     limit: number,
     ascending: boolean
   ) => Promise<readonly HKWorkoutRaw<TEnergy, TDistance>[]>;
-  readonly queryWorkoutSamplesWitAnchor: <
+  readonly queryWorkoutSamplesWithAnchor: <
     TEnergy extends EnergyUnit,
     TDistance extends LengthUnit
   >(

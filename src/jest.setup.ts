@@ -34,7 +34,7 @@ const mockModule: (NativeModule & typeof Native) = {
   queryStatisticsCollectionForQuantity: jest.fn(),
   queryActivitySummaryForQuantity: jest.fn(),
   queryWorkoutSamples: jest.fn(),
-  queryWorkoutSamplesWitAnchor: jest.fn(),
+  queryWorkoutSamplesWithAnchor: jest.fn(),
   saveCategorySample: jest.fn(),
   saveCorrelationSample: jest.fn(),
   saveWorkoutSample: jest.fn(),

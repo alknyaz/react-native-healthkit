@@ -933,7 +933,7 @@ type ReactNativeHealthkitTypeNative = {
     readonly deleteQuantitySample: <TIdentifier extends HKQuantityTypeIdentifier>(typeIdentifier: TIdentifier, uuid: string) => Promise<boolean>;
     readonly deleteSamples: <TIdentifier extends HKQuantityTypeIdentifier>(identifier: TIdentifier, start: string, end: string) => Promise<boolean>;
     readonly queryWorkoutSamples: <TEnergy extends EnergyUnit, TDistance extends LengthUnit>(energyUnit: TEnergy, distanceUnit: TDistance, from: string, to: string, limit: number, ascending: boolean) => Promise<readonly HKWorkoutRaw<TEnergy, TDistance>[]>;
-    readonly queryWorkoutSamplesWitAnchor: <TEnergy extends EnergyUnit, TDistance extends LengthUnit>(energyUnit: TEnergy, distanceUnit: TDistance, from: string, to: string, limit: number, anchor: string) => Promise<{
+    readonly queryWorkoutSamplesWithAnchor: <TEnergy extends EnergyUnit, TDistance extends LengthUnit>(energyUnit: TEnergy, distanceUnit: TDistance, from: string, to: string, limit: number, anchor: string) => Promise<{
         samples: readonly HKWorkoutRaw<TEnergy, TDistance>[];
         deletedSamples: readonly DeletedWorkoutSampleRaw[];
         newAnchor: string;

@@ -13,7 +13,7 @@ async function queryWorkoutsWitAnchor<
   const { energyUnit, distanceUnit } = await getPreferredUnitsTyped(options)
   const opts = prepareOptions(options)
 
-  const { samples, deletedSamples, newAnchor } = await Native.queryWorkoutSamplesWitAnchor(
+  const { samples, deletedSamples, newAnchor } = await Native.queryWorkoutSamplesWithAnchor(
     energyUnit,
     distanceUnit,
     opts.from,
