@@ -894,6 +894,9 @@ class ReactNativeHealthkit: RCTEventEmitter {
 
         let actualAnchor = deserializeHKQueryAnchor(anchor: anchor)
 
+        let energyUnit = HKUnit.init(from: energyUnitString)
+        let distanceUnit = HKUnit.init(from: distanceUnitString)
+
         let q = HKAnchoredObjectQuery(
           type: .workoutType(),
           predicate: predicate,
