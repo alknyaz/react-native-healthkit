@@ -914,7 +914,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
             return resolve([
               "samples": samples.map({ sample in
                 let serialized = serializeWorkout(
-                    workout: sample as? HKWorkout,
+                    workout: sample as HKWorkout,
                     energyUnit: energyUnit,
                     distanceUnit: distanceUnit
                 )
