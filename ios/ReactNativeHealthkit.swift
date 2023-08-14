@@ -914,15 +914,21 @@ class ReactNativeHealthkit: RCTEventEmitter {
                   return resolve([])
               }
 
+            var serializedSamples: NSMutableArray = []
+
+            for sample in samples {
+                if let workout = sample as? HKWorkout {
+                    let serialized = serializeWorkout(
+                        workout: workout,
+                        energyUnit: energyUnit,
+                        distanceUnit: distanceUnit
+                    )
+                    serializedSamples.add(serialized)
+                }
+            }
+
             return resolve([
-              "samples": samples.map({ sample in
-                let serialized = serializeWorkout(
-                    workout: sample as HKWorkout,
-                    energyUnit: energyUnit,
-                    distanceUnit: distanceUnit
-                )
-                return serialized
-              }) as Any,
+              "samples": serializedSamples,
               "deletedSamples": deletedSamples?.map({ sample in
                 return serializeDeletedSample(sample: sample)
               }) as Any,
