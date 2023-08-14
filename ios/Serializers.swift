@@ -232,7 +232,12 @@ func serializeStatsFromCollection(stats: HKStatistics, unit: HKUnit) -> [String:
     return dic
 }
 
-func serializeActivitySummary(summary: HKActivitySummary, calendar: Calendar) -> [String: Any?] {
+func serializeActivitySummary(
+    summary: HKActivitySummary,
+    energyUnit: HKUnit,
+    timeUnit: HKUnit,
+    calendar: Calendar
+) -> [String: Any?] {
     guard let startDate = summary.dateComponents(for: calendar).date else {
         fatalError("Should not fail")
     }

@@ -1558,7 +1558,12 @@ class ReactNativeHealthkit: RCTEventEmitter {
                 var arr: NSMutableArray = []
 
                 for summary in activitySummaries {
-                    let serialized = serializeActivitySummary(summary: summary, calendar: calendar)
+                    let serialized = serializeActivitySummary(
+                        summary: summary,
+                        energyUnit: energyUnit,
+                        timeUnit: timeUnit,
+                        calendar: calendar
+                    )
                     arr.add(serialized)
                 }
 
