@@ -1535,7 +1535,7 @@ class ReactNativeHealthkit: RCTEventEmitter {
 
             for s in summaries {
                 if let summary = s as? HKActivitySummary {
-                    serialized = serializeActivitySummary(summary: summary, calendar: calendar)
+                    let serialized = serializeActivitySummary(summary: summary, calendar: calendar)
                     arr.add(serialized)
                 }
             }
