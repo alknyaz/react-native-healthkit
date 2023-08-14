@@ -11,6 +11,7 @@ import saveCategorySample from './utils/saveCategorySample';
 import saveCorrelationSample from './utils/saveCorrelationSample';
 import saveQuantitySample from './utils/saveQuantitySample';
 import saveWorkoutSample from './utils/saveWorkoutSample';
+import queryWorkoutsWithAnchor from './utils/queryWorkoutsWithAnchor';
 declare const Healthkit: {
     authorizationStatusFor: (type: import("./native-types").HealthkitReadAuthorization) => Promise<import("./native-types").HKAuthorizationStatus>;
     isHealthDataAvailable: () => Promise<boolean>;
@@ -45,6 +46,7 @@ declare const Healthkit: {
         readonly updateCallback?: ((data: import("./native-types").HKActivitySummary<TEnergyUnit, TTimeUnit>[]) => void) | undefined;
     }) => Promise<import("./types").QueryActivitySummaryResponse<TEnergyUnit, TTimeUnit>>;
     queryWorkouts: typeof queryWorkouts;
+    queryWorkoutsWithAnchor: typeof queryWorkoutsWithAnchor;
     querySources: import("./utils/querySources").QuerySourcesFn;
     requestAuthorization: (read: readonly import("./native-types").HealthkitReadAuthorization[], write?: readonly import("./native-types").HKSampleTypeIdentifier[]) => Promise<boolean>;
     deleteQuantitySample: import("./utils/deleteQuantitySample").DeleteQuantitySampleFn;

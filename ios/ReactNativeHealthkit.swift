@@ -640,28 +640,12 @@ class ReactNativeHealthkit: RCTEventEmitter {
 
                 for s in samples {
                     if let workout = s as? HKWorkout {
-                        let endDate = self._dateFormatter.string(from: workout.endDate)
-                        let startDate = self._dateFormatter.string(from: workout.startDate)
-
-                        let dict: NSMutableDictionary = [
-                            "uuid": workout.uuid.uuidString,
-                            "device": serializeDevice(_device: workout.device) as Any,
-                            "duration": workout.duration,
-                            "totalDistance": serializeQuantity(unit: distanceUnit, quantity: workout.totalDistance) as Any,
-                            "totalEnergyBurned": serializeQuantity(unit: energyUnit, quantity: workout.totalEnergyBurned) as Any,
-                            "totalSwimmingStrokeCount": serializeQuantity(unit: HKUnit.count(), quantity: workout.totalSwimmingStrokeCount) as Any,
-                            "workoutActivityType": workout.workoutActivityType.rawValue,
-                            "startDate": startDate,
-                            "endDate": endDate,
-                            "metadata": serializeMetadata(metadata: workout.metadata),
-                            "sourceRevision": serializeSourceRevision(_sourceRevision: workout.sourceRevision) as Any
-                        ]
-
-                        if #available(iOS 11, *) {
-                            dict.setValue(serializeQuantity(unit: HKUnit.count(), quantity: workout.totalFlightsClimbed), forKey: "totalFlightsClimbed")
-                        }
-
-                        arr.add(dict)
+                        let serialized = serializeWorkout(
+                            workout: workout,
+                            energyUnit: energyUnit,
+                            distanceUnit: distanceUnit
+                        )
+                        arr.add(serialized)
                     }
                 }
 
@@ -874,6 +858,66 @@ class ReactNativeHealthkit: RCTEventEmitter {
               "samples": samples.map({ sample in
                 let serialized = serializeQuantitySample(sample: sample as! HKQuantitySample, unit: HKUnit.init(from: unitString))
 
+                return serialized
+              }) as Any,
+              "deletedSamples": deletedSamples?.map({ sample in
+                return serializeDeletedSample(sample: sample)
+              }) as Any,
+              "newAnchor": serializeAnchor(anchor: newAnchor) as Any
+            ])
+          }
+          reject(GENERIC_ERROR, err.localizedDescription, err)
+        }
+
+        store.execute(q)
+    }
+
+    @objc(queryWorkoutSamplesWithAnchor:distanceUnitString:from:to:limit:anchor:resolve:reject:)
+    func queryWorkoutSamplesWithAnchor(
+        energyUnitString: String,
+        distanceUnitString: String,
+        from: Date,
+        to: Date,
+        limit: Int,
+        anchor: String,
+        resolve: @escaping RCTPromiseResolveBlock,
+        reject: @escaping RCTPromiseRejectBlock
+    ) {
+        guard let store = _store else {
+            return reject(INIT_ERROR, INIT_ERROR_MESSAGE, nil)
+        }
+
+        let from = dateOrNilIfZero(date: from)
+        let to = dateOrNilIfZero(date: to)
+        let predicate = createPredicate(from: from, to: to)
+        let limit = limitOrNilIfZero(limit: limit)
+
+        let actualAnchor = deserializeHKQueryAnchor(anchor: anchor)
+
+        let q = HKAnchoredObjectQuery(
+          type: .workoutType(),
+          predicate: predicate,
+          anchor: actualAnchor,
+          limit: limit
+        ) { (
+          _: HKAnchoredObjectQuery,
+          s: [HKSample]?,
+          deletedSamples: [HKDeletedObject]?,
+          newAnchor: HKQueryAnchor?,
+          error: Error?
+        ) in
+          guard let err = error else {
+              guard let samples = s else {
+                  return resolve([])
+              }
+
+            return resolve([
+              "samples": samples.map({ sample in
+                let serialized = serializeWorkout(
+                    workout: sample as? HKWorkout,
+                    energyUnit: energyUnit,
+                    distanceUnit: distanceUnit
+                )
                 return serialized
               }) as Any,
               "deletedSamples": deletedSamples?.map({ sample in

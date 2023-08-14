@@ -291,3 +291,28 @@ func serializeActivitySummary(
     )
     return dic
 }
+
+func serializeWorkout(workout: HKWorkout, energyUnit: HKUnit, distanceUnit: HKUnit) -> NSMutableDictionary {
+    let endDate = _dateFormatter.string(from: workout.endDate)
+    let startDate = _dateFormatter.string(from: workout.startDate)
+
+    let dict: NSMutableDictionary = [
+        "uuid": workout.uuid.uuidString,
+        "device": serializeDevice(_device: workout.device) as Any,
+        "duration": workout.duration,
+        "totalDistance": serializeQuantity(unit: distanceUnit, quantity: workout.totalDistance) as Any,
+        "totalEnergyBurned": serializeQuantity(unit: energyUnit, quantity: workout.totalEnergyBurned) as Any,
+        "totalSwimmingStrokeCount": serializeQuantity(unit: HKUnit.count(), quantity: workout.totalSwimmingStrokeCount) as Any,
+        "workoutActivityType": workout.workoutActivityType.rawValue,
+        "startDate": startDate,
+        "endDate": endDate,
+        "metadata": serializeMetadata(metadata: workout.metadata),
+        "sourceRevision": serializeSourceRevision(_sourceRevision: workout.sourceRevision) as Any
+    ]
+
+    if #available(iOS 11, *) {
+        dict.setValue(serializeQuantity(unit: HKUnit.count(), quantity: workout.totalFlightsClimbed), forKey: "totalFlightsClimbed")
+    }
+
+    return dict
+}

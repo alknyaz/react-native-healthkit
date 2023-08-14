@@ -32,6 +32,7 @@ import saveCorrelationSample from './utils/saveCorrelationSample'
 import saveQuantitySample from './utils/saveQuantitySample'
 import saveWorkoutSample from './utils/saveWorkoutSample'
 import subscribeToChanges from './utils/subscribeToChanges'
+import queryWorkoutsWithAnchor from './utils/queryWorkoutsWithAnchor'
 
 const Healthkit = {
   authorizationStatusFor: Native.authorizationStatusFor.bind(Native),
@@ -74,6 +75,7 @@ const Healthkit = {
   queryStatisticsCollectionForQuantity,
   queryActivitySummaryForQuantity,
   queryWorkouts,
+  queryWorkoutsWithAnchor,
   querySources,
 
   requestAuthorization,

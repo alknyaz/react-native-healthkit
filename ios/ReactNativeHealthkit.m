@@ -100,6 +100,16 @@ RCT_EXTERN_METHOD(queryWorkoutSamples:(NSString)energyUnitString
                   reject:(RCTPromiseRejectBlock)reject
 )
 
+RCT_EXTERN_METHOD(queryWorkoutSamplesWithAnchor:(NSString)energyUnitString
+                  distanceUnitString:(NSString)distanceUnitString
+                  from:(NSDate)from
+                  to:(NSDate)to
+                  limit:(NSInteger)limit
+                  anchor:(NSString)anchor
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject
+)
+
 RCT_EXTERN_METHOD(queryHeartbeatSeriesSamples:(NSDate)from
                   to:(NSDate)to
                   limit:(NSInteger)limit

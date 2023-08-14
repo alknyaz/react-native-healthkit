@@ -853,6 +853,10 @@ export type DeletedQuantitySampleRaw<T extends HKQuantityTypeIdentifier> = {
     readonly uuid: string;
     readonly metadata: MetadataMapperForQuantityIdentifier<T>;
 };
+export type DeletedWorkoutSampleRaw = {
+    readonly uuid: string;
+    readonly metadata: HKWorkoutMetadata;
+};
 export type QueryCategorySamplesResponseRaw<T extends HKCategoryTypeIdentifier> = {
     readonly samples: readonly HKCategorySampleRaw<T>[];
     readonly deletedSamples: readonly DeletedCategorySampleRaw<T>[];
@@ -929,6 +933,11 @@ type ReactNativeHealthkitTypeNative = {
     readonly deleteQuantitySample: <TIdentifier extends HKQuantityTypeIdentifier>(typeIdentifier: TIdentifier, uuid: string) => Promise<boolean>;
     readonly deleteSamples: <TIdentifier extends HKQuantityTypeIdentifier>(identifier: TIdentifier, start: string, end: string) => Promise<boolean>;
     readonly queryWorkoutSamples: <TEnergy extends EnergyUnit, TDistance extends LengthUnit>(energyUnit: TEnergy, distanceUnit: TDistance, from: string, to: string, limit: number, ascending: boolean) => Promise<readonly HKWorkoutRaw<TEnergy, TDistance>[]>;
+    readonly queryWorkoutSamplesWitAnchor: <TEnergy extends EnergyUnit, TDistance extends LengthUnit>(energyUnit: TEnergy, distanceUnit: TDistance, from: string, to: string, limit: number, anchor: string) => Promise<{
+        samples: readonly HKWorkoutRaw<TEnergy, TDistance>[];
+        deletedSamples: readonly DeletedWorkoutSampleRaw[];
+        newAnchor: string;
+    }>;
     readonly queryCategorySamples: <T extends HKCategoryTypeIdentifier>(identifier: T, from: string, to: string, limit: number, ascending: boolean) => Promise<readonly HKCategorySampleRaw<T>[]>;
     readonly queryQuantitySamples: <TIdentifier extends HKQuantityTypeIdentifier, TUnit extends UnitForIdentifier<TIdentifier>>(identifier: TIdentifier, unit: TUnit, from: string, to: string, limit: number, ascending: boolean) => Promise<readonly HKQuantitySampleRaw<TIdentifier>[]>;
     readonly queryCategorySamplesWithAnchor: <T extends HKCategoryTypeIdentifier>(identifier: T, from: string, to: string, limit: number, anchor: string) => Promise<QueryCategorySamplesResponseRaw<T>>;

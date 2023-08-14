@@ -1,7 +1,7 @@
 import { NativeEventEmitter, NativeModules, Platform } from 'react-native'
 
 import type { EmitterSubscription, NativeModule } from 'react-native'
-import Healthkit from '.'
+import Healthkit, { HKWorkout } from '.'
 
 /**
  * See https://developer.apple.com/documentation/healthkit/hkworkouttypeidentifier
@@ -1272,6 +1272,11 @@ export type DeletedQuantitySampleRaw<T extends HKQuantityTypeIdentifier> = {
   readonly metadata: MetadataMapperForQuantityIdentifier<T>
 }
 
+export type DeletedWorkoutSampleRaw = {
+  readonly uuid: string;
+  readonly metadata: HKWorkoutMetadata;
+}
+
 export type QueryCategorySamplesResponseRaw<T extends HKCategoryTypeIdentifier> = {
   readonly samples: readonly HKCategorySampleRaw<T>[],
   readonly deletedSamples: readonly DeletedCategorySampleRaw<T>[],
@@ -1426,6 +1431,21 @@ type ReactNativeHealthkitTypeNative = {
     limit: number,
     ascending: boolean
   ) => Promise<readonly HKWorkoutRaw<TEnergy, TDistance>[]>;
+  readonly queryWorkoutSamplesWitAnchor: <
+    TEnergy extends EnergyUnit,
+    TDistance extends LengthUnit
+  >(
+    energyUnit: TEnergy,
+    distanceUnit: TDistance,
+    from: string,
+    to: string,
+    limit: number,
+    anchor: string
+  ) => Promise<{
+    samples: readonly HKWorkoutRaw<TEnergy, TDistance>[],
+    deletedSamples: readonly DeletedWorkoutSampleRaw[],
+    newAnchor: string
+  }>;
   readonly queryCategorySamples: <T extends HKCategoryTypeIdentifier>(
     identifier: T,
     from: string,
