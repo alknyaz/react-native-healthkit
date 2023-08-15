@@ -1598,7 +1598,12 @@ class ReactNativeHealthkit: RCTEventEmitter {
                 }
             }
 
-            return resolve(arr)
+            let res: NSDictionary = [
+                "queryId": queryId,
+                "data": arr
+            ]
+
+            return resolve(res)
         }
 
         if subscribe {
