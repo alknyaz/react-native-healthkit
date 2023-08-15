@@ -230,6 +230,7 @@ RCT_EXTERN_METHOD(queryActivitySummaryForQuantity:(NSString)energyUnitString
                   timeUnitString:(NSString)timeUnitString
                   from:(NSDate)from
                   to:(NSDate)to
+                  subscribe:(BOOL)subscribe
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject
 )
