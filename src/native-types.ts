@@ -1534,7 +1534,8 @@ type ReactNativeHealthkitTypeNative = {
     energyUnit: TEnergyUnit,
     timeUnit: TTimeUnit,
     from: string,
-    to: string
+    to: string,
+    subscribe: boolean
   ) => Promise<QueryActivitySummaryForQuantityRaw<TEnergyUnit, TTimeUnit>>
   readonly getPreferredUnits: (
     identifiers: readonly HKQuantityTypeIdentifier[]

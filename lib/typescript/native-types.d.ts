@@ -948,7 +948,7 @@ type ReactNativeHealthkitTypeNative = {
     readonly saveCategorySample: <T extends HKCategoryTypeIdentifier>(identifier: T, value: HKCategoryValueForIdentifier<T>, start: string, end: string, metadata: unknown) => Promise<boolean>;
     readonly queryStatisticsForQuantity: <TIdentifier extends HKQuantityTypeIdentifier, TUnit extends UnitForIdentifier<TIdentifier>>(identifier: HKQuantityTypeIdentifier, unit: TUnit, from: string, to: string, options: readonly HKStatisticsOptions[]) => Promise<QueryStatisticsResponseRaw<TIdentifier, TUnit>>;
     readonly queryStatisticsCollectionForQuantity: <TIdentifier extends HKQuantityTypeIdentifier, TUnit extends UnitForIdentifier<TIdentifier>>(identifier: HKQuantityTypeIdentifier, unit: TUnit, from: string, to: string, options: readonly HKStatisticsOptions[], subscribe: boolean) => Promise<QueryStatisticsCollectionResponseRaw<TIdentifier, TUnit>>;
-    readonly queryActivitySummaryForQuantity: <TEnergyUnit extends EnergyUnit, TTimeUnit extends TimeUnit>(energyUnit: TEnergyUnit, timeUnit: TTimeUnit, from: string, to: string) => Promise<QueryActivitySummaryForQuantityRaw<TEnergyUnit, TTimeUnit>>;
+    readonly queryActivitySummaryForQuantity: <TEnergyUnit extends EnergyUnit, TTimeUnit extends TimeUnit>(energyUnit: TEnergyUnit, timeUnit: TTimeUnit, from: string, to: string, subscribe: boolean) => Promise<QueryActivitySummaryForQuantityRaw<TEnergyUnit, TTimeUnit>>;
     readonly getPreferredUnits: (identifiers: readonly HKQuantityTypeIdentifier[]) => Promise<TypeToUnitMapping>;
     readonly getWorkoutRoutes: (workoutUUID: string) => Promise<readonly WorkoutRoute[]>;
 };

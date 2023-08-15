@@ -29,7 +29,8 @@ TTimeUnit extends UnitOfTime
     energyUnit,
     timeUnit,
     opts.from,
-    opts.to
+    opts.to,
+    subscribe
   )
 
   const result: QueryActivitySummaryResponse<TEnergyUnit, TTimeUnit> = {
