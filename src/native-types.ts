@@ -523,8 +523,8 @@ export type HKStatistics<
   TIdentifier extends HKQuantityTypeIdentifier,
   TUnit extends UnitForIdentifier<TIdentifier>
 > = {
-  startDate: string | Date,
-  endDate: string | Date,
+  startDate: Date,
+  endDate: Date,
   readonly averageQuantity?: HKQuantity<TIdentifier, TUnit>;
   readonly maximumQuantity?: HKQuantity<TIdentifier, TUnit>;
   readonly minimumQuantity?: HKQuantity<TIdentifier, TUnit>;
