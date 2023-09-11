@@ -573,7 +573,11 @@ class ReactNativeHealthkit: RCTEventEmitter {
             }
         }
 
-        let query = HKStatisticsQuery.init(quantityType: quantityType, quantitySamplePredicate: predicate, options: opts) { (_, stats: HKStatistics?, _: Error?) in
+        let query = HKStatisticsQuery.init(quantityType: quantityType, quantitySamplePredicate: predicate, options: opts) { (_, stats: HKStatistics?, err: Error?) in
+            if let error = err {
+                reject(GENERIC_ERROR, error.localizedDescription, error)
+            }
+
             if let gottenStats = stats {
                 var dic = [String: [String: Any]?]()
                 let unit = HKUnit.init(from: unitString)
